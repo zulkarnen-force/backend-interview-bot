@@ -1,5 +1,4 @@
 
-
 export default {
     port: process.env.PORT || 1234,
     ip: process.env.HOST || '127.0.0.1',
@@ -8,6 +7,9 @@ export default {
     },
     redis: {
       uri: process.env.REDIS_URL || 'redis://localhost:6379'
+    },
+    bot: {
+      token:  process.env.BOT_TOKEN
     },
     jwtSecret: process.env.JWT_SECRET || 'jkl!±@£!@ghj1237'
   };

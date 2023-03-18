@@ -1,4 +1,6 @@
-import ParticipantModel from "../model/participant.js";
+import PartisipantBot from "../model/things.js";
+
+// import PartisipantBot from "../model/participant.js";
 
 function omit(obj, ...props) {
   const result = { ...obj };
@@ -7,13 +9,13 @@ function omit(obj, ...props) {
 }
 
 export default function ParticipantRepositoryMongoDB() {
-  const findAll = async () => {return await ParticipantModel.find()};
+  const findAll = async () => {return await PartisipantBot.find()};
   const countAll = (params) =>
-    ParticipantModel.countDocuments(omit(params, 'page', 'perPage'));
-  const findById = (id) => ParticipantModel.findById(id);
+    PartisipantBot.countDocuments(omit(params, 'page', 'perPage'));
+  const findById = (id) => PartisipantBot.findById(id);
   
   const store = (data) => {
-    const newParticipant = new ParticipantModel(
+    const newParticipant = new PartisipantBot(
        data
     );
     return newParticipant.save();
@@ -26,14 +28,14 @@ export default function ParticipantRepositoryMongoDB() {
       isPublished: ParticipantEntity.isPublished()
     };
 
-    return ParticipantModel.findOneAndUpdate(
+    return PartisipantBot.findOneAndUpdate(
       { _id: id },
       { $set: updatedParticipant },
       { new: true }
     );
   };
 
-  const deleteById = (id) => ParticipantModel.findByIdAndRemove(id);
+  const deleteById = (id) => PartisipantBot.findByIdAndRemove(id);
 
   return {
     findAll,

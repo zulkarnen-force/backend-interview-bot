@@ -5,6 +5,7 @@ import store from '../../application/use_cases/participant/store.js';
 // import updateById from '../../application/use_cases/post/updateById';
 
 import findAll from "../../application/use_cases/participant/findAll.js";
+import getAllDto from '../../dto/participant/participant.dto.js';
 
 // import deletePost from '../../application/use_cases/post/deleteΒyId';
 // findAll
@@ -19,7 +20,10 @@ export default function postController(
 
   // Fetch all the posts of the logged in user
   const fetchAllPosts = (req, res, next) => {
-    findAll(dbRepository).then(r => res.json(r))
+    findAll(dbRepository).then(result => {
+      let participantDto = getAllDto(result);
+      return res.json(participantDto)
+    })
   
         // const params = {};
     // const response = {};
@@ -70,10 +74,10 @@ export default function postController(
 
   const addNewPartisipant = (req, res, next) => {
     let response = {};
-    const { hobby, name, id } = req.body;
+    // const { hobby, name, id } = req.body;
 
     store(
-      {hobby, name, id},
+      req.body,
       dbRepository
     )
       .then((result) => {
@@ -117,3 +121,4 @@ export default function postController(
     deletePostById
   };
 }
+``
