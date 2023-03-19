@@ -2,7 +2,7 @@ import { message } from "telegraf/filters";
 
 export default function makeBotUseCases(bot, opeanai) {
     let isRunning = false;
-    const start = () => {
+    const start = (goal, fields) => {
         if (isRunning) throw new Error('bot is running, mau setting ulang? please stop dulu ya...')
         set();
         bot.launch();
