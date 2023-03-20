@@ -1,17 +1,22 @@
 import { message } from "telegraf/filters";
 import FormRepositoryMongoDB from "../../../frameworks/database/mongoDB/repositories/FormRepositoryMongoDB.js";
-import isCompleteData from "../../../utils/check.js";
+import util, { isCompleteData, isObject }  from "../../../utils/check.js";
 import FormRepository from "../../repositories/formRepository.js";
+import getUserResponse from "../form/getUserResponse.js";
 
 
 export default function makeBotUseCases(bot, openai) {
     let isRunning = false;
     let history = {};
     let countChat = {};
+    let userHasFilled = {};
+
     const repositoy  = FormRepository(FormRepositoryMongoDB());
 
 
-    const checkCompletion = async (goal, fields, historyUser) => {
+
+
+    const toObjectJson = async (goal, fields, historyUser) => {
         try {
             const completion = await openai.createChatCompletion({
                 model: "gpt-3.5-turbo",
@@ -29,10 +34,10 @@ export default function makeBotUseCases(bot, openai) {
         }
     
 
-    const start = (goal, fields) => {
+    const start = (goal, fields, formId) => {
         if (isRunning) throw new Error('bot is running, mau setting ulang? please stop dulu ya...')
         console.log(goal)
-        set(goal, fields);
+        set(goal, fields, formId);
         bot.launch();
         console.log(`{goal: ${goal} and fields ${fields}}`)
         isRunning = true;
@@ -87,57 +92,105 @@ async function closing(historyUser)
     }
  
 }
-    const set = (goal, fields) => {
-
-        bot.on(message('text'), async (ctx) => {
-            let msg_in = ctx.message.text;
-            let chatID = ctx.message.chat.id;
-            history[chatID] += ` ${msg_in}`;
-            if (countChat[chatID] === undefined) countChat[chatID] = 0;
-            countChat[chatID] += 1;
-            console.log(`count user chatting this bot ${countChat[chatID]}`)
-           
-            if (countChat[chatID] > 3) {
-                let resultFromAI = await checkCompletion(goal, fields, history[chatID])
-                let request = {}
-                console.log('result from ai', resultFromAI);
-              if (isCompleteData(resultFromAI, fields)) {
-                try {
-
-                    request.user_id = chatID;
-                    request.channel = 'telegram'
-                    request.chat_history = history[chatID];
-                    request.status = 'complete';
-                    request.data = JSON.parse(resultFromAI);
-                    let FORM_ID = "6416df3f8e46204e60f35800"
-                    let repositoryRequest = await repositoy.saveNewRespondenDataFromForm(FORM_ID, request)
-                    console.log(repositoryRequest)
-                    await ctx.reply('oke, berhasil disimpan')
-                } catch (e) {
-                  console.log('error ', e)
-                }
-              }
-            }
-
-            let msg_out = "";
-            if(history[chatID] === undefined)
-            {
-              msg_out = await greeting(chatID, goal);
-            } else{
-              msg_out = await runInterview(msg_in, goal, fields, chatID);
-            }
-            await ctx.reply(msg_out);
-            
-          });
+      const checkComplete  = async (goal, fields, historyUser) =>  {
+        let jsonResultFromAi = await checkCompletion(goal, fields, historyUser);
+      }
+    
+    const toRequestFormat = (chatId, channel, totalToken, status, chat_history, data) => {
+      let request = {};
+      request.user_id = chatId;
+      request.channel = 'telegram'
+      request.chat_history = chat_history;
+      request.status = 'complete';
+      request.data = data
+      request.total_token = totalToken
+      request.status = status
+      return request;
     }
+    
+    let userComplete = {};
+
+      const set = (goal, fields, formId) => {
+      bot.on(message('text'), async (ctx) => {
+        
+        let msg_in = ctx.message.text;
+        let chatID = ctx.message.chat.id;
+        if (userHasFilled[chatID] || false) {
+          return ctx.reply('user has filled this form');
+        }
+
+        // let dataUserOnDb = await getUserResponse(repositoy, formId, chatID);
+        // if (dataUserOnDb) {
+        //   return ctx.reply('user has filled this form' + JSON.stringify(dataUserOnDb));
+        // }
+        
+        history[chatID] += ` ${msg_in}`;
+        if (!(history[chatID] === '' && history[chatID] === 'undefined')) {
+        }
+        if (countChat[chatID] === undefined) countChat[chatID] = 0;
+        countChat[chatID] += 1;
+        console.log(`message in ${msg_in}`)
+        console.log(`count chat ${countChat[chatID]}`)
+
+        if (countChat[chatID] > 3) {
+          let generatedObjByAi = await toObjectJson(goal, fields, history[chatID]);
+          let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
+          if (isComplete) {
+            console.log(toRequestFormat(chatID, 'telegram', countChat[chatID], 'complete', history[chatID], result))
+            // save to DB
+            userHasFilled[chatID] = true;
+          }
+          
+        } // if count chat > 3;
+
+        let msg_out = "";
+        if ( history[chatID] === undefined ) {
+          msg_out = await greeting(chatID, goal);
+        } else {
+          msg_out = await runInterview(msg_in, goal, fields, chatID);
+        }
+        console.info(msg_out);
+        await ctx.reply(msg_out);
+
+      }) // on message
+    }; // set bot
+
+        
+    //     if (countChat[chatID] > 3) {
+    //         let resultFromAI = await checkCompletion(goal, fields, history[chatID])
+    //         let request = {}
+    //         console.log('result from ai', resultFromAI);
+    //       if (isCompleteData(resultFromAI, fields)) {
+    //         try {
+    //             request.user_id = chatID;
+    //             request.channel = 'telegram'
+    //             request.chat_history = history[chatID];
+    //             request.status = 'complete';
+    //             request.data = JSON.parse(resultFromAI);
+    //             let FORM_ID = "6416df3f8e46204e60f35800"
+    //             let repositoryRequest = await repositoy.saveNewRespondenDataFromForm(FORM_ID, request)
+    //             console.log(repositoryRequest)
+    //             await ctx.reply('oke, berhasil disimpan')
+    //         } catch (e) {
+    //           console.log('error ', e)
+    //         }
+    //       }
+    //     }
+
+    //     let msg_out = "";
+    //     if(history[chatID] === undefined)
+    //     {
+    //       msg_out = await greeting(chatID, goal);
+    //     } else{
+    //       msg_out = await runInterview(msg_in, goal, fields, chatID);
+    //     }
+    //     await ctx.reply(msg_out);
+        
+    //   });
+    // }
 
     return {
         start,
         stop
     }
 }
-
-
-
-
-

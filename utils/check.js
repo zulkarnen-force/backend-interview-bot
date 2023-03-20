@@ -18,12 +18,12 @@ function isComplete(data = {})
     
 }
 
-const isObject = (prop) => {
+export const isObject = (prop) => {
     return typeof prop === "object" && typeof prop !== null && !Array.isArray(prop);
 }
 
-
-function isNotEmpty(object, key) {
+// (
+function isNotEmpty(object = {}, key = "") {
     if (object.hasOwnProperty(key) && object[key] !== null && object[key] !== undefined && object[key] !== '') {
       return true;
     } else {
@@ -31,26 +31,26 @@ function isNotEmpty(object, key) {
     }
   }
 
-let data = {name: "lengkap", nim: 1900016072, kelas: "100"};
+let data = {name: "lengkap", nim: 1900016072, kelas: 'asd'};
 
 const fields = ["name", "nim", "kelas"]
 
-const isCompleteData = (obj, fields) => {
+export const isCompleteData = (obj, fields) => {
+    console.log('isCompleteData', obj);
     let objectData = obj;
-    let isExist = true;
+    let isComplete = true;
 
     if (!isObject(objectData)) {
         objectData = JSON.parse(objectData);
     }
-    for (let key in objectData) {
+    for (let key of fields) {
         if(!isNotEmpty(objectData, key)) {
-            isExist = false;
+            console.log(objectData, key)
+            isComplete = false;
             break;
         }    
     }
-    return isExist;
+    return { isComplete, objectData };
 }
-
-
-
-export default isCompleteData;
+console.log(isCompleteData(data, fields))
+export default {isObject, isCompleteData}

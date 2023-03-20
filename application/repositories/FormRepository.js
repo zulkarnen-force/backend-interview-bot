@@ -5,7 +5,7 @@ export default function FormRepository(repositoryImpl) {
     const findById = (id) => repositoryImpl.findById(id);
     const store = (id) => repositoryImpl.store(id);
     const saveNewRespondenDataFromForm = (form_id, userData) => repositoryImpl.saveNewRespondenDataFromForm(form_id, userData);
-    const getUserResponse = (userId) => repositoryImpl.getUserResponse(userId);
+    const getUserResponse = async (formId, userId) => repositoryImpl.getUserResponse(formId, userId);
     
     return {
         list,
