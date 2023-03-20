@@ -129,16 +129,24 @@ async function closing(historyUser)
         }
         if (countChat[chatID] === undefined) countChat[chatID] = 0;
         countChat[chatID] += 1;
+
+        
         console.log(`message in ${msg_in}`)
         console.log(`count chat ${countChat[chatID]}`)
+        if (history[chatID].includes('undefined')) {
+          history[chatID] = history[chatID].replace('undefined', '')
+        }
 
         if (countChat[chatID] > 3) {
           let generatedObjByAi = await toObjectJson(goal, fields, history[chatID]);
           let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
           if (isComplete) {
+            
             console.log(toRequestFormat(chatID, 'telegram', countChat[chatID], 'complete', history[chatID], result))
             // save to DB
+           
             userHasFilled[chatID] = true;
+            return ctx.reply(await closing(history[chatID]))
           }
           
         } // if count chat > 3;
@@ -149,7 +157,6 @@ async function closing(historyUser)
         } else {
           msg_out = await runInterview(msg_in, goal, fields, chatID);
         }
-        console.info(msg_out);
         await ctx.reply(msg_out);
 
       }) // on message
