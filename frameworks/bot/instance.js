@@ -1,5 +1,8 @@
 import { Telegraf } from "telegraf";
 
-const bot = new Telegraf("6150107976:AAEha3FUSQFDDdNpkUH4JMBIiy3rqzvHzYA");
+export default function makeBot(config) {
+    // console.log(config)
 
-export default bot;
+    const bot = new Telegraf(config.bot.token);
+    return bot
+}

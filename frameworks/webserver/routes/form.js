@@ -28,9 +28,9 @@ export default function participantRouter(express) {
       );
 
       router
-      .route('/:form_id/responden')
-      .post(
-        controller.saveNewRespondedFromForm
+      .route('/:formId/responden/:userId/response')
+      .get(
+        controller.getUserResponseForm
       );
 
 

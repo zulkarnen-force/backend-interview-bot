@@ -1,3 +1,8 @@
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
+// console.log('test config', process.env.BOT_TOKEN)
 
 export default {
     port: process.env.PORT || 1234,

@@ -1,6 +1,6 @@
 import FormRepository from "../../application/repositories/formRepository.js";
 import makeBotUseCases from "../../application/use_cases/bot/bot.usecases.js";
-// FormRepository().findById
+
 export default function makeBotController(
     bot, 
     openai,
@@ -14,10 +14,9 @@ export default function makeBotController(
 
     const start = async (req, res, next) => {
         let formData = await repository.findById(req.params.id)
-        // console.log(formData);
         let {fields, goal} = formData;
         try {
-            useCases.start()
+            useCases.start(goal, fields)
             return res.json( {
                 message:'bot started successfully',
             });

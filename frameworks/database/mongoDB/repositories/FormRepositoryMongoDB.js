@@ -24,7 +24,12 @@ export default function FormRepositoryMongoDB()
       };
 
       const saveNewRespondenDataFromForm = (formId, respondenData) => {
-        return Form.findOneAndUpdate({_id: formId}, {$push: {data: respondenData}})
+        return Form.findOneAndUpdate({_id: formId}, {$push: {responses: respondenData}})
+      };
+
+
+      const getUserResponse = (userId) => {
+        return Form.findOne({'responses.data.user_id': userId})
       };
 
 
@@ -34,6 +39,7 @@ export default function FormRepositoryMongoDB()
         list,
         findById,
         store,
-        saveNewRespondenDataFromForm
+        saveNewRespondenDataFromForm,
+        getUserResponse,
     }
 }

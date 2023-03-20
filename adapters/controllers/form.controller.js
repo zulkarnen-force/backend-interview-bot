@@ -1,7 +1,9 @@
 import findById from "../../application/use_cases/form/findById.js";
+import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
 import list from "../../application/use_cases/form/list.js";
 import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
 import store from "../../application/use_cases/form/store.js";
+import Form from "../../frameworks/database/mongoDB/model/Form.js";
 
 export default function makeFormController(
     formDbRepository,
@@ -28,10 +30,18 @@ export default function makeFormController(
         return saveRespondenDataFromForm(dbRepository, form_id, req.body).then(e => res.json(e))
     }
 
+    
+    const getUserResponseForm = async (req, res, next) => {
+        const {formId, userId} = req.params;
+        let response = await getUserResponse(dbRepository, formId, userId);
+        return res.json(response);
+    }
+
     return {
         listOfForm,
         findFormById,
         storeNewForm,
-        saveNewRespondedFromForm
+        saveNewRespondedFromForm,
+        getUserResponseForm
     }
 } 
