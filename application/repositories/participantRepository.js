@@ -15,4 +15,3 @@ export default function partisipantRepository(repository) {
       deleteById
     };
   }
-  

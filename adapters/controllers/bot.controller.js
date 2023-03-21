@@ -31,7 +31,7 @@ export default function makeBotController(
             useCases.stop()
             return res.json('bot stopped successfully');
         } catch (e) {
-            return res.status(400).json(e.message)
+            return res.status(400).json({message: e.message})
         }
     }
 
