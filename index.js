@@ -25,5 +25,7 @@ bot.on('message', (ctx) => {
 } )
 
 bot.launch()
+console.log(bot)
+console.log(process.env.BOT_TOKEN)
 
 server.listen()
