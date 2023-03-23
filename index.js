@@ -6,14 +6,13 @@ import mongoDbConnection from './frameworks/database/mongoDB/connection.js';
 import mongoose from 'mongoose';
 import config  from './config/config.js';
 import routes from './frameworks/webserver/routes/index.js';
-// import * as dotenv from 'dotenv'
-// dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 
 expressConfig(app);
 serverConfig(app).startServer();
-// DB configuration and connection create
 mongoDbConnection(mongoose, config).connectToMongo();
 routes(app, express)
+
+server.listen()
