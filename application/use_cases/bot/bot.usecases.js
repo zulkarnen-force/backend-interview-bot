@@ -195,7 +195,7 @@ async function runInterview(txt, goal, fields, chatId)
 
     const handleWebhookUpadate = (goal, fields) => {
       bot.on(message('text'), (ctx) => {
-        // let msg_in = ctx.message.text;
+        let msg_in = ctx.message.text;
         // let chatID = ctx.message.chat.id;
         // return ctx.reply(`my goal ${goal} and fields ${fields} and my message ${msg_in}`);
         ctx.reply(`my message ${msg_in}`);
