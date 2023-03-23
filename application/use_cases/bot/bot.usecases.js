@@ -1,7 +1,7 @@
 import { message } from "telegraf/filters";
 import FormRepositoryMongoDB from "../../../frameworks/database/mongoDB/repositories/FormRepositoryMongoDB.js";
 import util, { isCompleteData, isObject }  from "../../../utils/check.js";
-import FormRepository from "../../repositories/formRepository.js";
+import FormRepository from "../../repositories/FormRepository.js";
 import getUserResponse from "../form/getUserResponse.js";
 import saveRespondenDataFromForm from '../form/saveRespondenDataFromForm.js'
 
