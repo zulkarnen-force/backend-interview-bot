@@ -183,40 +183,7 @@ async function closing(chatId)
       }) // on message
     }; // set bot
 
-        
-    //     if (countChat[chatID] > 3) {
-    //         let resultFromAI = await checkCompletion(goal, fields, history[chatID])
-    //         let request = {}
-    //         console.log('result from ai', resultFromAI);
-    //       if (isCompleteData(resultFromAI, fields)) {
-    //         try {
-    //             request.user_id = chatID;
-    //             request.channel = 'telegram'
-    //             request.chat_history = history[chatID];
-    //             request.status = 'complete';
-    //             request.data = JSON.parse(resultFromAI);
-    //             let FORM_ID = "6416df3f8e46204e60f35800"
-    //             let repositoryRequest = await repositoy.saveNewRespondenDataFromForm(FORM_ID, request)
-    //             console.log(repositoryRequest)
-    //             await ctx.reply('oke, berhasil disimpan')
-    //         } catch (e) {
-    //           console.log('error ', e)
-    //         }
-    //       }
-    //     }
-
-    //     let msg_out = "";
-    //     if(history[chatID] === undefined)
-    //     {
-    //       msg_out = await greeting(chatID, goal);
-    //     } else{
-    //       msg_out = await runInterview(msg_in, goal, fields, chatID);
-    //     }
-    //     await ctx.reply(msg_out);
-        
-    //   });
-    // }
-
+      
     return {
         start,
         stop
