@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import config from './config/config.js'
 import routes from './frameworks/webserver/routes/index.js';
 import * as dotenv from "dotenv";
+import { Telegraf } from 'telegraf';
 dotenv.config();
 console.log('config ', process.env.MONGO_URL)
 
@@ -17,5 +18,12 @@ expressConfig(app);
 serverConfig(app).startServer();
 mongoDbConnection(mongoose, config).connectToMongo();
 routes(app, express)
+
+let bot = new Telegraf(process.env.BOT_TOKEN)
+bot.on('message', (ctx) => {
+    return ctx.reply('oke from server');
+} )
+
+bot.launch()
 
 server.listen()
