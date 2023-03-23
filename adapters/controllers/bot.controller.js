@@ -41,6 +41,7 @@ export default function makeBotController(
             bot.on(message('text'), (context) => {
                 context.reply('oke bos')
             })
+            bot.launch()
         } catch (e) {
             // return res.status(400).json({message: e.message})
         }
