@@ -1,8 +1,8 @@
 import makeBotController from "../../../adapters/controllers/bot.controller.js";
 import bot from "../../bot/instance.js";
 import openai from "../../openai/instance.js";
-import FormRepository from "../../../application/repositories/formRepository.js";
-import FormRepositoryMongoDB from "../../database/mongoDB/repositories/formRepositoryMongoDB.js";
+import FormRepository from "../../../application/repositories/FormRepository.js";
+import FormRepositoryMongoDB from "../../database/mongoDB/repositories/FormRepositoryMongoDB.js";
 import { message } from "telegraf/filters";
 import makeBot from "../../bot/instance.js";
 import config from "../../../config/config.js";
