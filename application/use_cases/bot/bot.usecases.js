@@ -45,6 +45,7 @@ export default function makeBotUseCases(bot, openai) {
     const start = (goal, fields, formId) => {
         if (isRunning) throw new Error('bot is running, mau setting ulang? please stop dulu ya...')
         console.log(goal)
+        console.log(`bot ${bot}`);
         set(goal, fields, formId);
         bot.launch();
         console.log(`{goal: ${goal} and fields ${fields}}`)
