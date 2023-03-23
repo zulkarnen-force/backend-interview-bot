@@ -140,8 +140,9 @@ export default function makeBotUseCases(bot, openai) {
         // bot.launch();
         // console.log(`{goal: ${goal} and fields ${fields}}`)
         // isRunning = true;
-        await bot.on( message('text'), (ctx) => {
-          return ctx.reply('oke')
+        bot.on( message('text'), (ctx) => {
+          console.log(ctx);
+          ctx.reply('oke from vercel')
         })
         // console.log('ok')
         bot.launch()
