@@ -1,5 +1,5 @@
 export default function connection(mongoose, config, options) {
-  
+  // console.log('connection mongo url', process.env.MONGO_URL);
     function connectToMongo() {
       mongoose
         .connect(process.env.MONGO_URL, options)
@@ -27,14 +27,14 @@ export default function connection(mongoose, config, options) {
       mongoose.disconnect();
     });
   
-    mongoose.connection.on('disconnected', () => {
-      console.error(
-        `MongoDB disconnected! Reconnecting in ${
-          options.reconnectInterval / 1000
-        }s...`
-      );
-      setTimeout(() => connectToMongo(), options.reconnectInterval);
-    });
+    // mongoose.connection.on('disconnected', () => {
+    //   console.error(
+    //     `MongoDB disconnected! Reconnecting in ${
+    //       options.reconnectInterval / 1000
+    //     }s...`
+    //   );
+    //   setTimeout(() => connectToMongo(), options.reconnectInterval);
+    // });
   
     return {
       connectToMongo
