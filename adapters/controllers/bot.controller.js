@@ -36,9 +36,12 @@ export default function makeBotController(
     }
 
 
-    const handleWebhook = (req, res, next) => {
+    const handleWebhook = async (req, res, next) => {
         try {
-            useCases.handleWebhookUpadate();
+            let form_id = "641c04778ecc6dd3ddd0ffe5"
+            let formData = await repository.findById(req.params.id)
+            let {fields, goal} = formData;
+            useCases.start(goal, fields, form_id);
             // useCases.stop()
             // return res.json('bot stopped successfully');
         } catch (e) {
