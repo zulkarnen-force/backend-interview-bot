@@ -26,6 +26,6 @@ bot.launch({
         domain: "https://backend-interview-bot.vercel.app/",
         port:8000,
         hookPath:"/api/v1/bots/handle/webhook/"
-    })
+}})
 
 server.listen()
