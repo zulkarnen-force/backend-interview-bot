@@ -197,6 +197,7 @@ async function runInterview(txt, goal, fields, chatId)
       bot.on(message('text'), (ctx) => {
         return ctx.reply('oke bos');
       })
+      bot.launch();
     }
       
     return {
