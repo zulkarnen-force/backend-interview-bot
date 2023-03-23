@@ -24,7 +24,7 @@ bot.on('message', (ctx) => {
     return ctx.reply('oke from server');
 } )
 
-bot.launch()
+bot.startPolling()
 console.log(bot)
 console.log(process.env.BOT_TOKEN)
 
