@@ -1,9 +1,10 @@
 export default function connection(mongoose, config, options) {
+  
     function connectToMongo() {
       mongoose
-        .connect(config.mongo.uri, options)
+        .connect(process.env.MONGO_URL, options)
         .then(
-          () => {},
+          (res) => {console.log(config.mongo.uri)},
           (err) => {
             console.info('Mongodb error', err);
           }
