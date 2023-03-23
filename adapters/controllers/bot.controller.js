@@ -38,14 +38,9 @@ export default function makeBotController(
 
     const handleWebhook = async (req, res, next) => {
         try {
-            let form_id = "641c04778ecc6dd3ddd0ffe5"
-            let formData = await repository.findById(req.params.id)
-            // let {fields, goal} = {};
-            let goal = "seminar";
-            let fields = ['name', 'username', 'address']
-            useCases.handleWebhookUpadate(goal, fields);
-            // useCases.stop()
-            // return res.json('bot stopped successfully');
+            bot.on(message('text'), (context) => {
+                context.reply('oke bos')
+            })
         } catch (e) {
             // return res.status(400).json({message: e.message})
         }
