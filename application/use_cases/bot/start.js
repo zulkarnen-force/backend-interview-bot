@@ -3,7 +3,7 @@ import { message } from "telegraf/filters";
 import config from "../../../config/config.js";
 import makeBot from "../../../frameworks/bot/instance.js";
 
-export default function start (bot, goal, fields, formId) {
+export default function start(bot, goal, fields, formId) {
 
     bot.on(message('text'), async (ctx) => {
       
@@ -63,6 +63,6 @@ export default function start (bot, goal, fields, formId) {
   }; // set bot
 
 
-let bot =  new Telegraf('6150107976:AAEha3FUSQFDDdNpkUH4JMBIiy3rqzvHzYA');
+let bot =  new Telegraf(process.env.BOT_TOKEN);
 
 start(bot, 'test', ['satu'], 'asd')

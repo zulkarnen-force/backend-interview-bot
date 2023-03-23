@@ -14,8 +14,9 @@ export default function makeBotController(
     const start = async (req, res, next) => {
         let formData = await repository.findById(req.params.id)
         let {fields, goal} = formData;
+        console.log(fields)
         try {
-            useCases.start(goal, fields, req.params.id)
+            await useCases.start(goal, fields, req.params.id)
             return res.json( {
                 message:'bot started successfully',
             });
