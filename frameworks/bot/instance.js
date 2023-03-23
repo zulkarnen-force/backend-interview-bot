@@ -1,7 +1,7 @@
 import { Telegraf } from "telegraf";
 
 export default function makeBot(config) {
-    const bot = new Telegraf({
+    const bot = new Telegraf(process.env.BOT_TOKEN, {
         webhook: { 
             domain: "https://backend-interview-bot.vercel.app/",
             port:8000,
