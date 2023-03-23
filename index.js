@@ -20,12 +20,5 @@ mongoDbConnection(mongoose, config).connectToMongo();
 routes(app, express)
 
 let bot = new Telegraf(process.env.BOT_TOKEN)
-bot.on('message', (ctx) => {
-    return ctx.reply('oke from server');
-} )
-
-bot.startPolling()
-console.log(bot)
-console.log(process.env.BOT_TOKEN)
 
 server.listen()

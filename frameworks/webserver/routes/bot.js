@@ -19,7 +19,7 @@ export default function BotRouter(express) {
   
     router
       .route('/start/forms/:id')
-      .get(
+      .post(
         controller.start
       );
 

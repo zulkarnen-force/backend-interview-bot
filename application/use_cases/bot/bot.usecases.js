@@ -133,13 +133,12 @@ export default function makeBotUseCases(bot, openai) {
     
 
     const start = async (goal, fields, formId) => {
-        // if (isRunning) throw new Error('bot is running, mau setting ulang? please stop dulu ya...')
-        // console.log(goal)
-        // console.log(`bot ${bot}`);
-        // set(goal, fields, formId);
-        // bot.launch();
-        // console.log(`{goal: ${goal} and fields ${fields}}`)
-        // isRunning = true;
+        if (isRunning) throw new Error('bot is running, mau setting ulang? please stop dulu ya...')
+        console.log(goal)
+        console.log(`bot ${bot}`);
+        set(goal, fields, formId);
+        console.log(`{goal: ${goal} and fields ${fields}}`)
+        isRunning = true;
         bot.on( message('text'), (ctx) => {
           console.log(ctx);
           ctx.reply('oke from vercel')
