@@ -143,12 +143,11 @@ export default function makeBotUseCases(bot, openai) {
           console.log(ctx);
           ctx.reply('oke from vercel')
         })
-        // console.log('ok')
         bot.launch({
           webhook: { 
               domain: "https://backend-interview-bot.vercel.app/",
               port:8000,
-              hookPath:"/api/v1/start/forms"
+              hookPath:"/api/v1/bots/handle/webhook/"
           }
       })
     };
@@ -194,9 +193,15 @@ async function runInterview(txt, goal, fields, chatId)
 
 
 
+    const handleWebhookUpadate = () => {
+      bot.on(message('text'), (ctx) => {
+        return ctx.reply('oke bos');
+      })
+    }
       
     return {
         start,
-        stop
+        stop,
+        handleWebhookUpadate
     }
 }

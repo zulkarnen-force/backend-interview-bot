@@ -35,9 +35,21 @@ export default function makeBotController(
         }
     }
 
+
+    const handleWebhook = (req, res, next) => {
+        try {
+            useCases.handleWebhookUpadate();
+            // useCases.stop()
+            // return res.json('bot stopped successfully');
+        } catch (e) {
+            // return res.status(400).json({message: e.message})
+        }
+    }
+
     return {
         start,
-        stop
+        stop,
+        handleWebhook,
     }
 }
 

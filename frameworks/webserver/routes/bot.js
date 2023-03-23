@@ -29,6 +29,12 @@ export default function BotRouter(express) {
         controller.stop
       );
 
+      router
+      .route('/handle/webhook')
+      .post(
+        controller.handleWebhook
+      );
+
     
     return router;
   }
