@@ -214,7 +214,7 @@ async function runInterview(txt, goal, fields, chatId)
       console.log(`fields ${fields}`);
 
       if (userHasFilled[chatId]) {
-        return telegram.sendMessage(chatId, 'user has filled this form')
+        return bot.telegram.sendMessage(chatId, 'user has filled this form')
       }
 
       if (countChat[chatId] === undefined) countChat[chatId] = 0;
@@ -233,7 +233,7 @@ async function runInterview(txt, goal, fields, chatId)
          
           userHasFilled[chatId] = true;
           // return ctx.reply(await closing(chatId))
-          return telegram.sendMessage(chatId, await closing(chatId));
+          return bot.telegram.sendMessage(chatId, await closing(chatId));
         }
         
       } // if count chat > 3;
@@ -244,6 +244,7 @@ async function runInterview(txt, goal, fields, chatId)
         console.log('if')
         history[chatId] = message;
         msg_out = await greeting(chatId, goal);
+        console.log(`greeting message: ${msg_out}`)
       } else {
         console.log('else')
         history[chatId] += message;
@@ -251,7 +252,11 @@ async function runInterview(txt, goal, fields, chatId)
       }
       console.log(`sending message to user`)
 
-      telegram.sendMessage(chatId, msg_out);
+      try {
+        bot.telegram.sendMessage(chatId, msg_out);
+      } catch (err) {
+        console.error('error from send message ' + err.message);
+      }
 
     }
       
