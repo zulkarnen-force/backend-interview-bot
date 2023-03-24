@@ -65,7 +65,7 @@ export default function makeBotUseCases(bot, openai) {
                 // model: "gpt-4",
                 messages: [
                   //   {role: "system", content: "I need the data: "+ fields.join(', ')+". Get it from text: "+historyUser+". Give me data in JSON format. Give value as '' if it is empty. Convert time as 'HH:MM'"}
-                  {role: "system", content: "I need the data: "+ fields.join(', ')+". Get it from text: "+history[chatId] +  "Give me data in JSON format. Give value as '' if it is empty"}
+                  {role: "system", content: "I need the data: "+ fields.join(', ')+". Get it from text: "+ history[chatId] +  "Give me data in JSON format. Give value as '' if it is empty"}
                 ],
               });
               let response_content =  completion.data.choices[0].message.content; 
@@ -221,6 +221,7 @@ async function runInterview(txt, goal, fields, chatId)
       if (countChat[chatId] > 3) {
         let generatedObjByAi = await toObjectJson(goal, fields, chatId);
         let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
+        
         if (isComplete) {
           
           let requestFormat = toRequestFormat(chatId, 'telegram', usedUsersToken[chatId], 'complete', history[chatId], result)
@@ -235,6 +236,7 @@ async function runInterview(txt, goal, fields, chatId)
       } // if count chat > 3;
 
       let msg_out = "";
+      
       if ( history[chatId] === undefined ) {
         console.log('if')
         history[chatId] = message;
