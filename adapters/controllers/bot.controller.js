@@ -39,10 +39,8 @@ export default function makeBotController(
 
     const handleWebhook = async (req, res, next) => {
         try {
-            console.log(req.body)
             const bot = new TelegramBot(process.env.BOT_TOKEN)
             bot.processUpdate(req.body)
-            // res.send(200);
             await useCases.handleWebhookUpadate(req, res)
             res.send(200);
         } catch (e) {

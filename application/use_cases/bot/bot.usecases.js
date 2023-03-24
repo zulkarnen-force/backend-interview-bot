@@ -87,7 +87,7 @@ export default function makeBotUseCases(bot, openai) {
             if (userHasFilled[chatID] || false) {
               return ctx.reply('user has filled this form');
             }
-    
+  
             let dataUserOnDb = await getUserResponse(repositoy, formId, chatID);
             console.log(dataUserOnDb);
             if (dataUserOnDb.length !== 0) {
@@ -124,7 +124,11 @@ export default function makeBotUseCases(bot, openai) {
     
             let msg_out = "";
             if ( history[chatID] === undefined ) {
-              msg_out = await greeting(chatID, goal);
+              try {
+                msg_out = await greeting(chatID, goal);
+              } catch (e) {
+                console.error('error on greeting')
+              }
             } else {
               msg_out = await runInterview(msg_in, goal, fields, chatID);
             }
@@ -199,7 +203,6 @@ async function runInterview(txt, goal, fields, chatId)
 
     const handleWebhookUpadate = async (req, res) => {
       console.info('incoming update')
-      console.log(req.body)
       let formId = "641dd3a9094009867ad6faee"
       let {goal, fields} = await repositoy.findById(formId);
       let from = req.body.message.from
@@ -210,7 +213,7 @@ async function runInterview(txt, goal, fields, chatId)
       console.log(`goal ${goal}`);
       console.log(`fields ${fields}`);
 
-      if (userHasFilled[chatId] || false) {
+      if (userHasFilled[chatId]) {
         return telegram.sendMessage(chatId, 'user has filled this form')
       }
 
@@ -236,7 +239,7 @@ async function runInterview(txt, goal, fields, chatId)
       } // if count chat > 3;
 
       let msg_out = "";
-      
+
       if ( history[chatId] === undefined ) {
         console.log('if')
         history[chatId] = message;
