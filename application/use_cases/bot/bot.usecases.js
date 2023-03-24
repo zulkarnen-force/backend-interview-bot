@@ -16,7 +16,7 @@ export default function makeBotUseCases(bot, openai) {
     let userComplete = {};
 
     let repositoy  = FormRepository(FormRepositoryMongoDB());
-    let telegram = new Telegram(process.env.BOT_TOKEN)
+    // let telegram = new Telegram(process.env.BOT_TOKEN)
 
     const increaseUserToken = (chatId, token) => {
       if (usedUsersToken[chatId] === undefined) usedUsersToken[chatId] = 0;

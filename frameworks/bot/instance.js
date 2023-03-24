@@ -1,7 +1,11 @@
 import { Telegraf } from "telegraf";
 
 export default function makeBot(config) {
-    const bot = new Telegraf(process.env.BOT_TOKEN);
-    
-    return bot
+    try {
+        const bot = new Telegraf(process.env.BOT_TOKEN);
+        return bot
+    } catch (err) {
+        console.errpr('error form instace of bot ' + err.message)
+    }
+
 }
