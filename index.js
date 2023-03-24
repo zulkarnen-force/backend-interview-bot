@@ -13,9 +13,9 @@ import TelegramBot from 'node-telegram-bot-api';
 const app = express();
 const server = http.createServer(app);
 const bot = new TelegramBot(process.env.BOT_TOKEN)
-const url = 'https://0289-2001-448a-4042-15d9-c73-2733-54c5-5fa6.ap.ngrok.io';
+const url = 'https://backend-interview-bot.vercel.app/';
 const port = 3000;
-bot.setWebHook(`https://0289-2001-448a-4042-15d9-c73-2733-54c5-5fa6.ap.ngrok.io/api/v1/bots/handle/webhook`);
+bot.setWebHook(`https://backend-interview-bot.vercel.app/api/v1/bots/handle/webhook`);
 
 bot.on('message', msg => {
     bot.sendMessage(msg.chat.id, 'I am alive!');
