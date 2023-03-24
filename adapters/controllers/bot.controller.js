@@ -38,7 +38,11 @@ export default function makeBotController(
 
     const handleWebhook = async (req, res, next) => {
         try {
-            useCases.handleWebhookUpadate('goal', 'fields');
+            bot.on(message('text'), (ctx) => {
+                ctx.reply('halo')
+            })
+            bot.launch();
+            // useCases.handleWebhookUpadate('goal', 'fields');
         } catch (e) {
             console.error(e.message)
             return res.status(400).json({message: e.message})
