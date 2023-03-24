@@ -1,3 +1,4 @@
+import TelegramBot from "node-telegram-bot-api";
 import makeBotUseCases from "../../application/use_cases/bot/bot.usecases.js";
 
 export default function makeBotController(
@@ -38,11 +39,12 @@ export default function makeBotController(
 
     const handleWebhook = async (req, res, next) => {
         try {
-            bot.on(message('text'), (ctx) => {
-                ctx.reply('halo')
-            })
-            bot.launch();
-            // useCases.handleWebhookUpadate('goal', 'fields');
+            console.log(req.body)
+            const bot = new TelegramBot(process.env.BOT_TOKEN)
+            bot.processUpdate(req.body)
+            // res.send(200);
+            await useCases.handleWebhookUpadate(req, res)
+            res.send(200);
         } catch (e) {
             console.error(e.message)
             return res.status(400).json({message: e.message})

@@ -8,24 +8,35 @@ import config from './config/config.js'
 import routes from './frameworks/webserver/routes/index.js';
 import * as dotenv from "dotenv";
 import { Telegraf } from 'telegraf';
-dotenv.config();
-console.log('config ', process.env.MONGO_URL)
+import TelegramBot from 'node-telegram-bot-api';
 
 const app = express();
 const server = http.createServer(app);
+const bot = new TelegramBot(process.env.BOT_TOKEN)
+const url = 'https://0289-2001-448a-4042-15d9-c73-2733-54c5-5fa6.ap.ngrok.io';
+const port = 3000;
+bot.setWebHook(`https://0289-2001-448a-4042-15d9-c73-2733-54c5-5fa6.ap.ngrok.io/api/v1/bots/handle/webhook`);
+
+bot.on('message', msg => {
+    bot.sendMessage(msg.chat.id, 'I am alive!');
+});
 
 expressConfig(app);
 serverConfig(app).startServer();
 mongoDbConnection(mongoose, config).connectToMongo();
 routes(app, express)
 
-let bot = new Telegraf(process.env.BOT_TOKEN)
 
-bot.launch({
-    webhook: { 
-        domain: "https://backend-interview-bot.vercel.app/",
-        port:8000,
-        hookPath:"/api/v1/bots/handle/webhook/"
-}})
+// let bot = new Telegraf(process.env.BOT_TOKEN)
 
-server.listen()
+// bot.launch({
+//     allowedUpdates: 'message',
+//     dropPendingUpdates: true,
+//     webhook: { 
+//         domain: "https://0289-2001-448a-4042-15d9-c73-2733-54c5-5fa6.ap.ngrok.io",
+//         port:8000,
+//         hookPath:"/api/v1/bots/handle/webhook/",
+        
+// }})
+
+server.listen(3000)

@@ -1,3 +1,4 @@
+import { Telegram } from "telegraf";
 import { message } from "telegraf/filters";
 import FormRepositoryMongoDB from "../../../frameworks/database/mongoDB/repositories/FormRepositoryMongoDB.js";
 import util, { isCompleteData, isObject }  from "../../../utils/check.js";
@@ -15,6 +16,7 @@ export default function makeBotUseCases(bot, openai) {
     let userComplete = {};
 
     let repositoy  = FormRepository(FormRepositoryMongoDB());
+    let telegram = new Telegram(process.env.BOT_TOKEN)
 
     const increaseUserToken = (chatId, token) => {
       if (usedUsersToken[chatId] === undefined) usedUsersToken[chatId] = 0;
@@ -41,7 +43,7 @@ export default function makeBotUseCases(bot, openai) {
       }
     }
 
-    const greeting = async (chatID, goal) => {
+    const greeting = async (chatId, goal) => {
       const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       // model: "gpt-4",
@@ -52,7 +54,7 @@ export default function makeBotUseCases(bot, openai) {
       let response_content =  completion.data.choices[0].message.content;
       let totalToken = completion.data.usage.total_tokens;
       increaseUserToken(chatId, totalToken);
-      history[chatID] += `${response_content} `;
+      history[chatId] += `${response_content} `;
       return response_content;
     }
 
@@ -75,7 +77,7 @@ export default function makeBotUseCases(bot, openai) {
             } catch (err) {
                 console.log('error from check Completion', err)
             }
-        }
+    }
     
         const set = (goal, fields, formId) => {
           bot.on(message('text'), async (ctx) => {
@@ -170,11 +172,13 @@ async function runInterview(txt, goal, fields, chatId)
       {role: "user", content: txt}
     ],
   });
+
   let totalToken = completion.data.usage.total_tokens;
   let response_content =  completion.data.choices[0].message.content;
   increaseUserToken(chatId, totalToken);
   history[chatId] += ` ${response_content}.`;
   return response_content;
+
 }
 
     
@@ -193,12 +197,52 @@ async function runInterview(txt, goal, fields, chatId)
 
 
 
-    const handleWebhookUpadate = (goal, fields) => {
-      bot.on(message('text'), (ctx) => {
-        let msg_in = ctx.message.text;
-        ctx.reply(`my message ${msg_in}`);
-      })
-      bot.launch();
+    const handleWebhookUpadate = async (req, res) => {
+      console.info('incoming update')
+      console.log(req.body)
+      let formId = "641c04778ecc6dd3ddd0ffe5"
+      let {goal, fields} = await repositoy.findById("641c04778ecc6dd3ddd0ffe5");
+      let from = req.body.message.from
+      let chatId = req.body.message.chat.id;
+      let message = req.body.message.text;
+      console.log(`history${chatId}`, history[chatId])
+      console.log(`message ${message}`);
+      console.log(`goal ${goal}`);
+      console.log(`fields ${fields}`);
+
+      if (countChat[chatId] === undefined) countChat[chatId] = 0;
+      countChat[chatId] += 1;
+
+      // after history is enough to check is complete data;
+      if (countChat[chatId] > 3) {
+        let generatedObjByAi = await toObjectJson(goal, fields, chatId);
+        let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
+        if (isComplete) {
+          
+          let requestFormat = toRequestFormat(chatId, 'telegram', usedUsersToken[chatId], 'complete', history[chatId], result)
+          // save to DB
+          saveRespondenDataFromForm(repositoy, formId, requestFormat).then(r => console.log(`save databases `, r))
+         
+          userHasFilled[chatId] = true;
+          return ctx.reply(await closing(chatId))
+        }
+        
+      } // if count chat > 3;
+
+      let msg_out = "";
+      if ( history[chatId] === undefined ) {
+        console.log('if')
+        history[chatId] = message;
+        msg_out = await greeting(chatId, goal);
+      } else {
+        console.log('else')
+        history[chatId] += message;
+        msg_out = await runInterview(message, goal, fields, chatId);
+      }
+      console.log(`sending message to user`)
+
+      telegram.sendMessage(chatId, msg_out);
+
     }
       
     return {
