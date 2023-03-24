@@ -205,6 +205,7 @@ async function runInterview(txt, goal, fields, chatId)
       console.info('incoming update')
       let formId = "641dd3a9094009867ad6faee"
       let {goal, fields} = await repositoy.findById(formId);
+      console.log('req body' + req.body)
       let from = req.body.message.from
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
