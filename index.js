@@ -9,8 +9,10 @@ import routes from './frameworks/webserver/routes/index.js';
 import * as dotenv from "dotenv";
 import { Telegraf } from 'telegraf';
 import TelegramBot from 'node-telegram-bot-api';
+import cors from 'cors';
 
 const app = express();
+app.use(cors())
 const server = http.createServer(app);
 const bot = new TelegramBot(process.env.BOT_TOKEN)
 const url = 'https://backend-interview-bot.vercel.app/';
@@ -20,7 +22,6 @@ bot.setWebHook(`https://backend-interview-bot.vercel.app/api/v1/bots/handle/webh
 bot.on('message', msg => {
     bot.sendMessage(msg.chat.id, 'I am alive!');
 });
-
 expressConfig(app);
 serverConfig(app).startServer();
 mongoDbConnection(mongoose, config).connectToMongo();
