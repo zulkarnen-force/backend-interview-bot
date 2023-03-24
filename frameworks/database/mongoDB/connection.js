@@ -4,7 +4,7 @@ export default function connection(mongoose, config, options) {
       mongoose
         .connect(process.env.MONGO_URL, options)
         .then(
-          (res) => {console.log(config.mongo.uri)},
+          (res) => {console.log(process.env.MONGO_URL)},
           (err) => {
             console.info('Mongodb error', err);
           }

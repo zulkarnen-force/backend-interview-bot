@@ -200,8 +200,8 @@ async function runInterview(txt, goal, fields, chatId)
     const handleWebhookUpadate = async (req, res) => {
       console.info('incoming update')
       console.log(req.body)
-      let formId = "641c04778ecc6dd3ddd0ffe5"
-      let {goal, fields} = await repositoy.findById("641c04778ecc6dd3ddd0ffe5");
+      let formId = "641dd3a9094009867ad6faee"
+      let {goal, fields} = await repositoy.findById(formId);
       let from = req.body.message.from
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
@@ -209,6 +209,10 @@ async function runInterview(txt, goal, fields, chatId)
       console.log(`message ${message}`);
       console.log(`goal ${goal}`);
       console.log(`fields ${fields}`);
+
+      if (userHasFilled[chatId] || false) {
+        return telegram.sendMessage(chatId, 'user has filled this form')
+      }
 
       if (countChat[chatId] === undefined) countChat[chatId] = 0;
       countChat[chatId] += 1;
@@ -224,7 +228,8 @@ async function runInterview(txt, goal, fields, chatId)
           saveRespondenDataFromForm(repositoy, formId, requestFormat).then(r => console.log(`save databases `, r))
          
           userHasFilled[chatId] = true;
-          return ctx.reply(await closing(chatId))
+          // return ctx.reply(await closing(chatId))
+          return telegram.sendMessage(chatId, await closing(chatId));
         }
         
       } // if count chat > 3;
