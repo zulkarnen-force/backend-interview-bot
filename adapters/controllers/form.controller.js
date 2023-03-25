@@ -1,7 +1,9 @@
 import findById from "../../application/use_cases/form/findById.js";
+import getActiveForm from "../../application/use_cases/form/getActiveForm.js";
 import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
 import list from "../../application/use_cases/form/list.js";
 import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
+import setActive from "../../application/use_cases/form/setActive.js";
 import store from "../../application/use_cases/form/store.js";
 import Form from "../../frameworks/database/mongoDB/model/Form.js";
 
@@ -21,7 +23,7 @@ export default function makeFormController(
 
 
     const storeNewForm = (req, res, next) => {
-        return store(dbRepository, req.body).then(e => res.json(e))
+        return store(dbRepository, req.body).then(e => res.json(e)).catch(err => res.json(err))
     }
 
 
@@ -37,11 +39,37 @@ export default function makeFormController(
         return res.json(response);
     }
 
+    const findActiveForm = async (req, res, next) => {
+        try {
+            let activeForm = await getActiveForm(dbRepository);
+            return res.json(activeForm);
+        } catch (e)  {
+            return res.status(404).json({code: 404, message: e.message})
+        }
+    }
+
+
+    const formSetActive = async (req, res, next) => {
+        try {
+            await Form.updateMany({is_active: true}, {$set: {is_active: false}});
+            let response = await setActive(dbRepository, req.params.formId);
+            return res.json( {
+                'message': 'this form has been activated',
+                data: response
+            }
+            )
+        } catch (e)  {
+            return res.status(404).json({code: 404, message: e.message})
+        }
+    }
+
     return {
         listOfForm,
         findFormById,
         storeNewForm,
         saveNewRespondedFromForm,
-        getUserResponseForm
+        getUserResponseForm,
+        findActiveForm,
+        formSetActive
     }
 } 

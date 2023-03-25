@@ -16,34 +16,31 @@ import mongoose from "mongoose";
 // }
 // ]
 let formSchema = new mongoose.Schema({
-    fields: [String],
+    fields: {
+        type: [String],
+        required: true,
+        validate: [(value) => value.length > 0, 'please fill fields minimal satu aja'],
+    },
+    is_active: {
+        type: Boolean, 
+        default: false
+    },
     targets: [String],
-    goal: String,
+    goal: {
+        type: String,
+        required: true
+    },
     responses: [mongoose.Schema.Types.Mixed],
     created_at: {
         type: 'Date',
         default: Date.now
-    }
+    },
+    end_date: {
+        type: 'Date',
+    },
 }, { strict: false });
 
-// const example_data = {
-//     id: 'asdasdasdasdd',
-//     fields: ['name', 'address', 'hobby'],
-//     goal: 'provide random data',
-//     responses: [{
-//         channel: 'telegram',
-//         user_id: 38420,
-//         chat_history: 'asdaskd asda sdasdasdasdasd asd asd asdasd',
-//         status: 'pending',
-//         data: {
-//             name: 'zulkarnen',
-//             address: 'jl ki ageng pemanahan',
-//             hobby: 'membaca buku'
-//         }
-//     }]
-// }
 let Form = mongoose.model('form', formSchema);
-// let newForm = new Form(example_data);
-// newForm.save().then(r => console.log(r));
+
 
 export default Form;

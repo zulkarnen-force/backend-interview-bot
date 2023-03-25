@@ -32,6 +32,20 @@ export default function FormRepositoryMongoDB()
         return Form.findOne({'responses.data.user_id': userId})
       };
 
+      const findActive = () => {
+        return Form.findOne({is_active: true})
+      };
+
+      const setActive = async (formId) => {
+        console.log(formId)
+        try {
+            let form = await Form.findOneAndUpdate({_id: formId}, {is_active: true} );
+            return form;
+        } catch (e) {
+            console.error('error activated form ' + e)
+        }
+      };
+
 
 
 
@@ -41,5 +55,7 @@ export default function FormRepositoryMongoDB()
         store,
         saveNewRespondenDataFromForm,
         getUserResponse,
+        findActive,
+        setActive
     }
 }

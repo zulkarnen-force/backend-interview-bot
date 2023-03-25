@@ -6,13 +6,17 @@ export default function FormRepository(repositoryImpl) {
     const store = (id) => repositoryImpl.store(id);
     const saveNewRespondenDataFromForm = (form_id, userData) => repositoryImpl.saveNewRespondenDataFromForm(form_id, userData);
     const getUserResponse = async (formId, userId) => repositoryImpl.getUserResponse(formId, userId);
+    const findActive = async () => repositoryImpl.findActive();
+    const setActive = async (formId) => repositoryImpl.setActive(formId);
     
     return {
         list,
         findById,
         store,
         saveNewRespondenDataFromForm,
-        getUserResponse
+        getUserResponse,
+        findActive,
+        setActive
     };
     
   }

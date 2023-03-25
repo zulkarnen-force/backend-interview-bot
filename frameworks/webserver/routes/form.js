@@ -13,12 +13,25 @@ export default function participantRouter(express) {
       controller.listOfForm
     );
 
+    router
+    .route('/active')
+    .get(
+      controller.findActiveForm
+    );
+
     
 
     router
       .route('/:id')
       .get(
         controller.findFormById
+      );
+
+
+      router
+      .route('/:formId/active')
+      .get(
+        controller.formSetActive
       );
 
       router
@@ -32,6 +45,7 @@ export default function participantRouter(express) {
       .get(
         controller.getUserResponseForm
       );
+
 
 
 
