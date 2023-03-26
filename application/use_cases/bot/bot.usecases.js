@@ -203,7 +203,7 @@ async function runInterview(txt, goal, fields, chatId)
 
     const handleWebhookUpadate = async (req, res) => {
       console.info('incoming update')
-      let {goal, fields} = await repositoy.findActive();      
+      let {_id: formId, goal, fields} = await repositoy.findActive();      
       let from = req.body.message.from
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
