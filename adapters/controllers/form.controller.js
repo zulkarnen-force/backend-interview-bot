@@ -1,7 +1,7 @@
 import findById from "../../application/use_cases/form/findById.js";
 import getActiveForm from "../../application/use_cases/form/getActiveForm.js";
 import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
-import list from "../../application/use_cases/form/list.js";
+import getResponses from "../../application/use_cases/form/getResponses.js";
 import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
 import setActive from "../../application/use_cases/form/setActive.js";
 import store from "../../application/use_cases/form/store.js";
@@ -63,6 +63,15 @@ export default function makeFormController(
         }
     }
 
+    const listOfResponses = async (req, res, next) => {
+        try {
+            let forms = await getResponses(dbRepository);
+            return res.json(forms);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     return {
         listOfForm,
         findFormById,
@@ -70,6 +79,7 @@ export default function makeFormController(
         saveNewRespondedFromForm,
         getUserResponseForm,
         findActiveForm,
-        formSetActive
+        formSetActive,
+        listOfResponses
     }
 } 

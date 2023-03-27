@@ -29,6 +29,14 @@ export default function participantRouter(express) {
 
 
       router
+      .route('/:formId/responses')
+      .get(
+        controller.listOfResponses
+      );
+
+
+
+      router
       .route('/:formId/active')
       .get(
         controller.formSetActive
