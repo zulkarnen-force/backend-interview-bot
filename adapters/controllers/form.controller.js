@@ -2,6 +2,7 @@ import findById from "../../application/use_cases/form/findById.js";
 import getActiveForm from "../../application/use_cases/form/getActiveForm.js";
 import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
 import getResponses from "../../application/use_cases/form/getResponses.js";
+import list from "../../application/use_cases/form/list.js";
 import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
 import setActive from "../../application/use_cases/form/setActive.js";
 import store from "../../application/use_cases/form/store.js";
@@ -14,7 +15,7 @@ export default function makeFormController(
     const dbRepository = formDbRepository(formDbImpl()); 
 
     const listOfForm = (req, res, next) => {
-        return list(dbRepository, req.params.id).then(e => res.json(e))
+        return list(dbRepository).then(e => res.json(e))
     }
 
     const findFormById = (req, res, next) => {
