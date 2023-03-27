@@ -66,7 +66,7 @@ export default function makeFormController(
 
     const listOfResponses = async (req, res, next) => {
         try {
-            let forms = await getResponses(dbRepository);
+            let forms = await getResponses(dbRepository, req.params.formId);
             return res.json(forms);
         } catch (e) {
             console.error(e);
