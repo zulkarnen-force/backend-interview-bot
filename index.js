@@ -13,6 +13,7 @@ import cors from 'cors';
 
 const app = express();
 app.use(cors())
+
 const server = http.createServer(app);
 const bot = new TelegramBot(process.env.BOT_TOKEN)
 const port = 3000;

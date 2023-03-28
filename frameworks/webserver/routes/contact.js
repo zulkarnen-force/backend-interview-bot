@@ -1,7 +1,20 @@
+import multer from "multer";
 import makeContactController from "../../../adapters/controllers/contact.controller.js";
 import ContactRepository from "../../../application/repositories/ContactRepository.js";
 import MakeContactUseCase from "../../../application/use_cases/contact/MakeContactUseCase.js";
 import ContactRepositoryMongoDB from "../../database/mongoDB/repositories/ContactRepositoryMongoDB.js";
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 export default function contactController(express = express()) {
     const router = express.Router();
@@ -18,6 +31,12 @@ export default function contactController(express = express()) {
     .route('/')
     .post(
       controller.storeContact
+    );
+
+    router
+    .route('/import')
+    .post( upload.single('contacts'),
+      controller.importContacts
     );
 
 
