@@ -21,7 +21,6 @@ export default function contactController(express = express()) {
     );
 
 
-
     router
     .route('/:id')
     .get(
