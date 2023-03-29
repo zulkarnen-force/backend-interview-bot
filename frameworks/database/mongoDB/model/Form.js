@@ -30,6 +30,7 @@ let formSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    botId: String,
     responses: [mongoose.Schema.Types.Mixed],
     created_at: {
         type: 'Date',

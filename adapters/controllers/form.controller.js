@@ -18,6 +18,35 @@ export default function makeFormController(
         return list(dbRepository).then(e => res.json(e))
     }
 
+    const getFormByBotId = async (req, res, next) => {
+        console.log(req.params.botId);
+        
+
+        try {
+            let result = await Form.find({botId: req.params.botId});
+            if (result.length === 0) {
+                throw new Error('forms with the bot id not found');
+            }
+            let response = result.map(res => {
+                let resultJson = res.toJSON();
+                return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
+            })
+            return res.json(response);
+        } catch (error) {
+            return res.status(400).json({
+                code: 400,
+                message: error.message,
+            })
+        }
+        
+    }
+
+
+    const updateForm = async (req, res, next) => {
+        let result = await Form.updateOne({_id: req.params.formId}, req.body);
+        res.json(result);
+    }
+
     const findFormById = (req, res, next) => {
         return findById(dbRepository, req.params.id).then(e => res.json(e)).catch(err => console.log(err.message))
     }
@@ -73,14 +102,48 @@ export default function makeFormController(
         }
     }
 
+    function userExists(array, ayidi) {
+        return array.some(function(el) {
+          return el.user_id === ayidi;
+        }); 
+      }
+      
+    const storeNewResponse = async (req, res, next) => {
+        try {
+            let a = await Form.find({_id: req.params.formId}).lean();
+            let responses = a[0].responses;
+            let isExsits = userExists(responses, req.body.user_id);
+            if (isExsits) {
+                return res.status(400).json(
+                    {
+                        message: 'data is exists',
+                    }
+                )
+            }
+            // Form(req.body)
+            let result = await saveRespondenDataFromForm(dbRepository, req.params.formId, req.body)
+            return res.json(
+                {
+                    message: 'new response data inserted successfully',
+                    data: result
+                }
+            )
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     return {
         listOfForm,
         findFormById,
         storeNewForm,
+        updateForm,
         saveNewRespondedFromForm,
         getUserResponseForm,
         findActiveForm,
         formSetActive,
-        listOfResponses
+        listOfResponses,
+        storeNewResponse,
+        getFormByBotId
     }
 } 
