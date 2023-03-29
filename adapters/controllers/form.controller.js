@@ -14,7 +14,26 @@ export default function makeFormController(
 ) {
     const dbRepository = formDbRepository(formDbImpl()); 
 
-    const listOfForm = (req, res, next) => {
+    const listOfForm = async (req, res, next) => {
+        let queryBotId = req.query.botid;
+        if (queryBotId) {
+            try {
+                let result = await Form.find({botId: queryBotId});
+                if (result.length === 0) {
+                    throw new Error('forms with the bot id not found');
+                }
+                let response = result.map(res => {
+                    let resultJson = res.toJSON();
+                    return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
+                })
+                return res.json(response);
+            } catch (error) {
+                return res.status(400).json({
+                    code: 400,
+                    message: error.message,
+                })
+            }
+        }
         return list(dbRepository).then(e => res.json(e))
     }
 
