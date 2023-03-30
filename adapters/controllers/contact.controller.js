@@ -3,6 +3,10 @@ import fs from "fs"
 import parse from 'csv-parser';
 import Contact from "../../frameworks/database/mongoDB/model/Contact.js";
 import path from "path";
+import { Readable } from "stream";
+import csvParser from "csv-parser";
+import * as CSV from 'csv-string';
+
 
 
 export default function makeContactController(repository) {
@@ -84,52 +88,40 @@ export default function makeContactController(repository) {
     }
 
 
+
+
+class BufferStream extends Readable {
+  constructor(opts) {
+    super(opts);
+    this.buf = opts.buf;
+  }
+  _read(size) {
+    this.push(this.buf);
+    this.push(null); // signal end of stream
+  }
+}
     const importContacts = async (req, res, next) => {
-
-        const jsonDirectory = path.join(process.cwd(), 'uploads');
-        // const readable = Readable.from(req.file.buffer);
-        // console.log(readable)
-        // readable.on('data', (r) => {
-        //     // console.log(r);
-        //     // let f = fs.readFileSync(r);
-        //     // console.log(f);
-        //     // return;
-        //     console.log(String(r))
-        //     fs.createReadStream(String(r))
-
-        // })
-        // return;
         try {
             let data = [];
-            let fileDir = `${jsonDirectory}\\${req.file.filename}`;
-            fs.createReadStream(fileDir)
-            .pipe(parse({ delimiter: ',' }))
-            .on('data', (r) => {
-                let telp = r['Phone 1 - Value'].replace(' ', '').split(':::')[0];
-                if (r.Name === '' || telp === '') {
-                    return;
-                }
-                data.push({name: r.Name, telephone: r['Phone 1 - Value'].replace(' ', '').split(':::')[0],  channel: 'whatsapp'})
-            })
-            .on('end', () => {
-                console.log(data.length)
-                console.log(data)
-                Contact.insertMany(data, {ordered: false}).then(result => {
-                    return res.json(result)
-                }).catch(err => {
-                    console.log(err);
-                    return res.status(400).json({
-                        code: err.code,
-                        message: err.message
-                    })
-                })
-            })
-            
+            let t = CSV.parse(String(req.file.buffer), {output: 'objects'} )
+            t.forEach(value => {
+                let telp = value['Phone 1 - Value'].replace(' ', '').split(':::')[0]
+                let name = value['Name']
+                if (name === '' || telp === '') return;
+                data.push({name: name, telephone: telp,  channel: 'whatsapp'})
+             })
+             let response = await Contact.insertMany(data, {ordered: false});
+             res.json({
+                message: 'successfully',
+                response: response
+             })
         } catch (error) {
-            return res.status(400).json( {
-               message: error.message
-            })
+            res.json({
+                message: 'so sad',
+                error: error.message
+             })
         }
+        
     }
 
     

@@ -5,18 +5,18 @@ import MakeContactUseCase from "../../../application/use_cases/contact/MakeConta
 import ContactRepositoryMongoDB from "../../database/mongoDB/repositories/ContactRepositoryMongoDB.js";
 import path from "path";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, `${path.join(process.cwd(), '/uploads')}`);
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, `${path.join(process.cwd(), '/uploads')}`);
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   }
+// });
 
-const upload = multer({ storage: storage });
-// var storage = multer.memoryStorage();
-// var upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
 
 export default function contactController(express = express()) {
     const router = express.Router();
