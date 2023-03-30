@@ -28,9 +28,14 @@ let formSchema = new mongoose.Schema({
     },
     botId: String,
     responses: [mongoose.Schema.Types.Mixed],
-    end_date: {
+    expired_date: {
         type: 'Date',
+        default: Date.now
     },
+    status: {
+        type: String,
+        default: "ready"
+    }
 }, { strict: false, timestamps: true});
 
 let Form = mongoose.model('Form', formSchema);

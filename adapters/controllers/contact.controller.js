@@ -1,9 +1,9 @@
-import multer from "multer";
 import MakeContactUseCase from "../../application/use_cases/contact/MakeContactUseCase.js"
 import fs from "fs"
 import parse from 'csv-parser';
 import Contact from "../../frameworks/database/mongoDB/model/Contact.js";
-import { channel } from "diagnostics_channel";
+import path from "path";
+import { Readable } from "stream";
 
 
 export default function makeContactController(repository) {
@@ -86,8 +86,22 @@ export default function makeContactController(repository) {
 
 
     const importContacts = async (req, res, next) => {
+        // const jsonDirectory = path.join(process.cwd(), 'uploads');
+        // const readable = Readable.from(req.file.buffer);
+        // console.log(readable)
+        // readable.on('data', (r) => {
+        //     // console.log(r);
+        //     // let f = fs.readFileSync(r);
+        //     // console.log(f);
+        //     // return;
+        //     console.log(String(r))
+        //     fs.createReadStream(String(r))
+
+        // })
+        // return;
         try {
             let data = [];
+            // let fileDir = `${jsonDirectory}\\${req.file.filename}`;
             fs.createReadStream(req.file.path)
             .pipe(parse({ delimiter: ',' }))
             .on('data', (r) => {

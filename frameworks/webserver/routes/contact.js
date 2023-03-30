@@ -14,7 +14,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
+// var storage = multer.memoryStorage();
+// var upload = multer({ storage: storage });
 
 export default function contactController(express = express()) {
     const router = express.Router();
