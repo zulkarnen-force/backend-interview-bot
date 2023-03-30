@@ -12,7 +12,7 @@ let schema = new mongoose.Schema({
     },
     channel: {
         type: String,
-        required: true
+        required: true,
     },
     created_at: {
         type: 'Date',

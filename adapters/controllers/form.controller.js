@@ -2,31 +2,26 @@ import findById from "../../application/use_cases/form/findById.js";
 import getActiveForm from "../../application/use_cases/form/getActiveForm.js";
 import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
 import getResponses from "../../application/use_cases/form/getResponses.js";
-import list from "../../application/use_cases/form/list.js";
 import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
 import setActive from "../../application/use_cases/form/setActive.js";
 import store from "../../application/use_cases/form/store.js";
 import Form from "../../frameworks/database/mongoDB/model/Form.js";
+import FormUseCase from "../../application/use_cases/FormUseCase.js";
 
 export default function makeFormController(
     formDbRepository,
     formDbImpl, 
 ) {
-    const dbRepository = formDbRepository(formDbImpl()); 
+    const dbRepository = formDbRepository(formDbImpl());
+    const usecase = FormUseCase(dbRepository);
 
     const listOfForm = async (req, res, next) => {
         let queryBotId = req.query.botid;
+        
         if (queryBotId) {
             try {
-                let result = await Form.find({botId: queryBotId});
-                if (result.length === 0) {
-                    throw new Error('forms with the bot id not found');
-                }
-                let response = result.map(res => {
-                    let resultJson = res.toJSON();
-                    return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
-                })
-                return res.json(response);
+                let result = await usecase.findByQuery({botId: queryBotId})
+                return res.json(result);
             } catch (error) {
                 return res.status(400).json({
                     code: 400,
@@ -34,7 +29,9 @@ export default function makeFormController(
                 })
             }
         }
-        return list(dbRepository).then(e => res.json(e))
+
+        let forms = await usecase.listForms();
+        return res.json(forms);
     }
 
     const getFormByBotId = async (req, res, next) => {
@@ -129,26 +126,20 @@ export default function makeFormController(
       
     const storeNewResponse = async (req, res, next) => {
         try {
-            let a = await Form.find({_id: req.params.formId}).lean();
-            let responses = a[0].responses;
-            let isExsits = userExists(responses, req.body.user_id);
-            if (isExsits) {
-                return res.status(400).json(
-                    {
-                        message: 'data is exists',
-                    }
-                )
+            let {user_id} = req.body;
+            let a = await Form.find({_id: "6416df3f8e46204e60f35800", "responses.user_id":user_id});
+            if (a.length !== 0) {
+                throw new Error('user has filled this form and data is exists on database')
             }
-            // Form(req.body)
             let result = await saveRespondenDataFromForm(dbRepository, req.params.formId, req.body)
-            return res.json(
-                {
+            return res.json({
                     message: 'new response data inserted successfully',
-                    data: result
-                }
-            )
+                })
         } catch (e) {
-            console.error(e);
+            return res.status(400).json({
+                code: 400, 
+                message: e.message
+            });
         }
     }
 

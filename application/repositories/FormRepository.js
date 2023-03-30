@@ -8,6 +8,7 @@ export default function FormRepository(repositoryImpl) {
     const getUserResponse = async (formId, userId) => repositoryImpl.getUserResponse(formId, userId);
     const findActive = async () => repositoryImpl.findActive();
     const setActive = async (formId) => repositoryImpl.setActive(formId);
+    const findByQuery = async (query) => repositoryImpl.findByQuery(query);
     
     return {
         list,
@@ -16,7 +17,8 @@ export default function FormRepository(repositoryImpl) {
         saveNewRespondenDataFromForm,
         getUserResponse,
         findActive,
-        setActive
+        setActive,
+        findByQuery
     };
     
   }

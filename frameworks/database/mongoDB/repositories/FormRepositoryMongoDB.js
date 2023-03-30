@@ -16,6 +16,14 @@ export default function FormRepositoryMongoDB()
         }
     }
 
+    const findByQuery = async (query) => {
+      try {
+          return Form.find(query);
+      } catch (e) {
+          throw e;
+      }
+  }
+
     const store = (data) => {
         const newForm = new Form(
            data
@@ -52,6 +60,7 @@ export default function FormRepositoryMongoDB()
     return {
         list,
         findById,
+        findByQuery,
         store,
         saveNewRespondenDataFromForm,
         getUserResponse,
