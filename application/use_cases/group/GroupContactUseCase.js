@@ -46,7 +46,7 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
         }
     }
 
-    const  addContact = async (id, data) => {
+    const pushContact = async (id, data) => {
         try {
             let response = await repository.push(id, data);
             return response
@@ -62,6 +62,6 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
         getOneContact,
         updateContact,
         deleteContact,
-        addContact
+        pushContact
     }
 }

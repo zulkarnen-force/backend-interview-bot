@@ -14,6 +14,10 @@ let schema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    is_valid: {
+        type: Boolean,
+        default: false,
+    },
     created_at: {
         type: 'Date',
         default: Date.now

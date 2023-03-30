@@ -41,10 +41,10 @@ export default function GroupContactController(repository) {
             let id = req.params.id;
             let data = req.body;
             let { contacts } = data;
-            let response = await usecase.addContact(id, contacts)
+            if (!contacts) throw new Error('contacts is required bro')
+            let response = await usecase.pushContact(id, contacts)
             return await res.json({
-                message: 'contact saved successfully',
-                data: response
+                message: 'contact added successfully',
             });
         } catch (e) {
             return await res.status(400).json({
@@ -68,6 +68,11 @@ export default function GroupContactController(repository) {
             }
             return res.json(responseJson);
         } catch (error) {
+            if (error instanceof TypeError) {
+                return res.status(400).json({
+                    message: 'maybe your id wrongs'
+                });
+            }
             return res.status(400).json({
                 message: error.message
             });
