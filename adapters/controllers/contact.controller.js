@@ -3,7 +3,6 @@ import fs from "fs"
 import parse from 'csv-parser';
 import Contact from "../../frameworks/database/mongoDB/model/Contact.js";
 import path from "path";
-import { Readable } from "stream";
 
 
 export default function makeContactController(repository) {
@@ -86,7 +85,8 @@ export default function makeContactController(repository) {
 
 
     const importContacts = async (req, res, next) => {
-        // const jsonDirectory = path.join(process.cwd(), 'uploads');
+
+        const jsonDirectory = path.join(process.cwd(), 'uploads');
         // const readable = Readable.from(req.file.buffer);
         // console.log(readable)
         // readable.on('data', (r) => {
@@ -101,8 +101,8 @@ export default function makeContactController(repository) {
         // return;
         try {
             let data = [];
-            // let fileDir = `${jsonDirectory}\\${req.file.filename}`;
-            fs.createReadStream(req.file.path)
+            let fileDir = `${jsonDirectory}\\${req.file.filename}`;
+            fs.createReadStream(fileDir)
             .pipe(parse({ delimiter: ',' }))
             .on('data', (r) => {
                 let telp = r['Phone 1 - Value'].replace(' ', '').split(':::')[0];
@@ -113,11 +113,15 @@ export default function makeContactController(repository) {
             })
             .on('end', () => {
                 console.log(data.length)
+                console.log(data)
                 Contact.insertMany(data, {ordered: false}).then(result => {
                     return res.json(result)
                 }).catch(err => {
                     console.log(err);
-                    return res.json(err.message)
+                    return res.status(400).json({
+                        code: err.code,
+                        message: err.message
+                    })
                 })
             })
             

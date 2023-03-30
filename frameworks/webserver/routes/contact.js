@@ -3,10 +3,11 @@ import makeContactController from "../../../adapters/controllers/contact.control
 import ContactRepository from "../../../application/repositories/ContactRepository.js";
 import MakeContactUseCase from "../../../application/use_cases/contact/MakeContactUseCase.js";
 import ContactRepositoryMongoDB from "../../database/mongoDB/repositories/ContactRepositoryMongoDB.js";
+import path from "path";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, `${path.join(process.cwd(), '/uploads')}`);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
