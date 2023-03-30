@@ -8,6 +8,14 @@ export default function FormRepositoryMongoDB()
         return Form.find();
     }
 
+    const update = async (id, data) => {
+      return Form.updateOne({_id: id}, data)
+    }
+
+    const drop = async (id) => {
+      return Form.findOneAndDelete({_id: id})
+    }
+
     const findById = async (id) => {
         try {
             return Form.findById(id);
@@ -62,6 +70,8 @@ export default function FormRepositoryMongoDB()
         findById,
         findByQuery,
         store,
+        update,
+        drop,
         saveNewRespondenDataFromForm,
         getUserResponse,
         findActive,

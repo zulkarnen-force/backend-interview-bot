@@ -4,16 +4,20 @@ export default function FormRepository(repositoryImpl) {
     const list = () => repositoryImpl.list();
     const findById = (id) => repositoryImpl.findById(id);
     const store = (id) => repositoryImpl.store(id);
+    const update = (id, data) => repositoryImpl.update(id, data);
     const saveNewRespondenDataFromForm = (form_id, userData) => repositoryImpl.saveNewRespondenDataFromForm(form_id, userData);
     const getUserResponse = async (formId, userId) => repositoryImpl.getUserResponse(formId, userId);
     const findActive = async () => repositoryImpl.findActive();
     const setActive = async (formId) => repositoryImpl.setActive(formId);
     const findByQuery = async (query) => repositoryImpl.findByQuery(query);
+    const drop = async (id) => repositoryImpl.drop(id);
     
     return {
         list,
         findById,
         store,
+        drop,
+        update,
         saveNewRespondenDataFromForm,
         getUserResponse,
         findActive,

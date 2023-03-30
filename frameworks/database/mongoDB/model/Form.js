@@ -39,7 +39,7 @@ let formSchema = new mongoose.Schema({
     end_date: {
         type: 'Date',
     },
-}, { strict: false });
+}, { strict: false, timestamps: true});
 
 let Form = mongoose.model('form', formSchema);
 

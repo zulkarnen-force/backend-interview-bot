@@ -20,8 +20,30 @@ export default function FormUseCase(repository = FormRepository()) {
         return response;
     } 
 
+
+    const updateForm = async (id, data) => {
+        try {
+            return repository.update(id, data);
+        } catch (error) {
+            throw error;
+        }
+    } 
+
+
+    const deleteForm = async (id) => {
+        try {
+            let result = await repository.drop(id);
+            if (!result) throw new Error('form not found');
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    } 
+
     return {
         listForms,
+        updateForm,
+        deleteForm,
         findByQuery
     }
 }

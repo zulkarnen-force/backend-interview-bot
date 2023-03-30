@@ -34,6 +34,7 @@ export default function makeFormController(
         return res.json(forms);
     }
 
+    // GET /forms/bots/:id
     const getFormByBotId = async (req, res, next) => {
         console.log(req.params.botId);
         
@@ -59,8 +60,36 @@ export default function makeFormController(
 
 
     const updateForm = async (req, res, next) => {
-        let result = await Form.updateOne({_id: req.params.formId}, req.body);
-        res.json(result);
+        try {
+            console.log('update')
+            console.log(req.body);
+            let resultUpdate = await usecase.updateForm(req.params.formId, req.body);
+            return res.json({
+                message: 'form updated successfully',
+                data: resultUpdate,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                code: 400, 
+                message: error.message
+            })
+        }
+
+    }
+
+    const destoryForm = async (req, res, next) => {
+        try {
+            let response = await usecase.deleteForm(req.params.id);
+            return res.json({
+                message: 'form deleted successfully',
+                data: response,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                code: 400, 
+                message: error.message
+            })
+        }
     }
 
     const findFormById = (req, res, next) => {
@@ -148,6 +177,7 @@ export default function makeFormController(
         findFormById,
         storeNewForm,
         updateForm,
+        destoryForm,
         saveNewRespondedFromForm,
         getUserResponseForm,
         findActiveForm,

@@ -19,6 +19,13 @@ export default function participantRouter(express) {
       controller.updateForm
     );
 
+
+    router
+    .route('/:id')
+    .delete(
+      controller.destoryForm
+    );
+
     
 
     
