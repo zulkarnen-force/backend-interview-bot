@@ -4,6 +4,7 @@ export default function FormUseCase(repository = FormRepository()) {
 
     const listForms = async () => {
         return repository.list();
+
     } 
 
     const findByQuery = async (query) => {
@@ -40,10 +41,22 @@ export default function FormUseCase(repository = FormRepository()) {
         }
     } 
 
+
+    const setActive = async (id) => {
+        try {
+            await repository.deactiveAll();
+            let result = await repository.setActive(id);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    } 
+
     return {
         listForms,
         updateForm,
         deleteForm,
-        findByQuery
+        findByQuery,
+        setActive
     }
 }

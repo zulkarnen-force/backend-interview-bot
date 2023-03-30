@@ -1,11 +1,32 @@
+import { Document } from "mongoose";
+import Child from "../model/Child.js";
+import Contact from "../model/Contact.js";
 import Form from "../model/Form.js"
+import Parent from "../model/Parent.js";
 
 
 export default function FormRepositoryMongoDB() 
 {
 
     const list = async () => {
-        return Form.find();
+      //       let parent = new Parent({
+      //   parent_name: "Zulkarnen",
+      //   parent: "642591db5fd529132c82831a"
+      // });
+      // parent.save()
+      // let child = new Child({
+      //   child_name: "Zulkarnen",
+      //   parent: "64259341a2114f15a98fd22b"
+      // });
+      // child.save()
+      // let childs = await Child.find().populate('parent');
+      // return childs;
+      let a = await Form.find({}).populate({
+        path: 'targets',
+        strictPopulate: false,
+        select: ['title', 'channel', 'contacts'],
+      })
+      return a;
     }
 
     const update = async (id, data) => {
@@ -52,13 +73,16 @@ export default function FormRepositoryMongoDB()
         return Form.findOne({is_active: true})
       };
 
+      const deactiveAll = async () => {
+        await Form.updateMany({is_active: true}, {$set: {is_active: false}});
+      }
+
       const setActive = async (formId) => {
-        console.log(formId)
         try {
             let form = await Form.findOneAndUpdate({_id: formId}, {is_active: true} );
             return form;
         } catch (e) {
-            console.error('error activated form ' + e)
+            throw e;
         }
       };
 
@@ -75,6 +99,7 @@ export default function FormRepositoryMongoDB()
         saveNewRespondenDataFromForm,
         getUserResponse,
         findActive,
-        setActive
+        setActive,
+        deactiveAll,
     }
 }

@@ -126,8 +126,9 @@ export default function makeFormController(
 
     const formSetActive = async (req, res, next) => {
         try {
-            await Form.updateMany({is_active: true}, {$set: {is_active: false}});
-            let response = await setActive(dbRepository, req.params.formId);
+            let response = await usecase.setActive(req.params.formId);
+            // await Form.updateMany({is_active: true}, {$set: {is_active: false}});
+            // let response = await setActive(dbRepository, req.params.formId);
             return res.json( {
                 'message': 'this form has been activated',
                 data: response

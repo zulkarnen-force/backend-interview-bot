@@ -11,6 +11,7 @@ export default function FormRepository(repositoryImpl) {
     const setActive = async (formId) => repositoryImpl.setActive(formId);
     const findByQuery = async (query) => repositoryImpl.findByQuery(query);
     const drop = async (id) => repositoryImpl.drop(id);
+    const deactiveAll = async () => repositoryImpl.deactiveAll();
     
     return {
         list,
@@ -22,7 +23,8 @@ export default function FormRepository(repositoryImpl) {
         getUserResponse,
         findActive,
         setActive,
-        findByQuery
+        findByQuery,
+        deactiveAll
     };
     
   }
