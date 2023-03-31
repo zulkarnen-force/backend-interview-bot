@@ -92,8 +92,13 @@ export default function makeFormController(
         }
     }
 
-    const findFormById = (req, res, next) => {
-        return findById(dbRepository, req.params.id).then(e => res.json(e)).catch(err => console.log(err.message))
+    const findFormById = async (req, res, next) => {
+        try {
+            let result = await Form.findById(req.params.id).populate('targets')
+            return res.json(result)
+        } catch (error) {
+            return res.json({message: error.message})
+        }   
     }
 
 
@@ -127,8 +132,6 @@ export default function makeFormController(
     const formSetActive = async (req, res, next) => {
         try {
             let response = await usecase.setActive(req.params.formId);
-            // await Form.updateMany({is_active: true}, {$set: {is_active: false}});
-            // let response = await setActive(dbRepository, req.params.formId);
             return res.json( {
                 'message': 'this form has been activated',
                 data: response
@@ -157,7 +160,8 @@ export default function makeFormController(
     const storeNewResponse = async (req, res, next) => {
         try {
             let {user_id} = req.body;
-            let a = await Form.find({_id: "6416df3f8e46204e60f35800", "responses.user_id":user_id});
+            let {formId} = req.params;
+            let a = await Form.find({_id: formId, "responses.user_id": user_id});
             if (a.length !== 0) {
                 throw new Error('user has filled this form and data is exists on database')
             }
