@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, get } from "mongoose";
 import Child from "../model/Child.js";
 import Contact from "../model/Contact.js";
 import Form from "../model/Form.js"
@@ -9,18 +9,6 @@ export default function FormRepositoryMongoDB()
 {
 
     const list = async () => {
-      //       let parent = new Parent({
-      //   parent_name: "Zulkarnen",
-      //   parent: "642591db5fd529132c82831a"
-      // });
-      // parent.save()
-      // let child = new Child({
-      //   child_name: "Zulkarnen",
-      //   parent: "64259341a2114f15a98fd22b"
-      // });
-      // child.save()
-      // let childs = await Child.find().populate('parent');
-      // return childs;
       let a = await Form.find({}).populate({
         path: 'targets',
         strictPopulate: false,
@@ -39,7 +27,7 @@ export default function FormRepositoryMongoDB()
 
     const findById = async (id) => {
         try {
-            return Form.findById(id);
+            return Form.findById(id).populate('targets');
         } catch (e) {
             throw e;
         }
@@ -60,7 +48,17 @@ export default function FormRepositoryMongoDB()
         return newForm.save();
       };
 
-      const saveNewRespondenDataFromForm = (formId, respondenData) => {
+
+      const userHasFilled = async (formId, userId) => {
+        try {
+          let form = await Form.find({_id: formId, "responses.user_id": userId});
+          return form.length !== 0;
+        } catch (error) {
+          throw error;
+        }
+      };
+
+      const storeResponse = (formId, respondenData) => {
         return Form.findOneAndUpdate({_id: formId}, {$push: {responses: respondenData}})
       };
 
@@ -79,8 +77,8 @@ export default function FormRepositoryMongoDB()
 
       const setActive = async (formId) => {
         try {
-            let form = await Form.findOneAndUpdate({_id: formId}, {is_active: true} );
-            return form;
+            let form = await Form.findOneAndUpdate({_id: formId}, {is_active: true});
+            return form
         } catch (e) {
             throw e;
         }
@@ -94,12 +92,13 @@ export default function FormRepositoryMongoDB()
         findById,
         findByQuery,
         store,
+        storeResponse,
         update,
         drop,
-        saveNewRespondenDataFromForm,
         getUserResponse,
         findActive,
         setActive,
         deactiveAll,
+        userHasFilled
     }
 }

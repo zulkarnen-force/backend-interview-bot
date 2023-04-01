@@ -19,6 +19,12 @@ export default function participantRouter(express) {
       controller.updateForm
     );
 
+    router
+    .route('/:id/response')
+    .post(
+      controller.storeNewResponse
+    );
+
 
     router
     .route('/:id')
@@ -26,15 +32,7 @@ export default function participantRouter(express) {
       controller.destoryForm
     );
 
-    
 
-    
-
-    router
-    .route('/bots/:botId')
-    .get(
-      controller.getFormByBotId
-    );
 
     router
     .route('/active')
@@ -52,7 +50,7 @@ export default function participantRouter(express) {
 
 
       router
-      .route('/:formId/responses')
+      .route('/:id/responses')
       .get(
         controller.listOfResponses
       );
@@ -60,7 +58,7 @@ export default function participantRouter(express) {
 
 
       router
-      .route('/:formId/active')
+      .route('/:id/active')
       .get(
         controller.formSetActive
       );
@@ -78,11 +76,7 @@ export default function participantRouter(express) {
       );
 
 
-      router
-      .route('/:formId/response')
-      .post(
-        controller.storeNewResponse
-      );
+
 
 
   

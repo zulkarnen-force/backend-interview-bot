@@ -34,29 +34,7 @@ export default function makeFormController(
         return res.json(forms);
     }
 
-    // GET /forms/bots/:id
-    const getFormByBotId = async (req, res, next) => {
-        console.log(req.params.botId);
-        
-
-        try {
-            let result = await Form.find({botId: req.params.botId});
-            if (result.length === 0) {
-                throw new Error('forms with the bot id not found');
-            }
-            let response = result.map(res => {
-                let resultJson = res.toJSON();
-                return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
-            })
-            return res.json(response);
-        } catch (error) {
-            return res.status(400).json({
-                code: 400,
-                message: error.message,
-            })
-        }
-        
-    }
+   
 
 
     const updateForm = async (req, res, next) => {
@@ -94,7 +72,8 @@ export default function makeFormController(
 
     const findFormById = async (req, res, next) => {
         try {
-            let result = await Form.findById(req.params.id).populate('targets')
+            let id = req.params.id;
+            let result = await usecase.findForm(id);
             return res.json(result)
         } catch (error) {
             return res.json({message: error.message})
@@ -107,10 +86,7 @@ export default function makeFormController(
     }
 
 
-    const saveNewRespondedFromForm = (req, res, next) => {
-        const {form_id, responden_id} = req.params;
-        return saveRespondenDataFromForm(dbRepository, form_id, req.body).then(e => res.json(e))
-    }
+
 
     
     const getUserResponseForm = async (req, res, next) => {
@@ -121,7 +97,7 @@ export default function makeFormController(
 
     const findActiveForm = async (req, res, next) => {
         try {
-            let activeForm = await getActiveForm(dbRepository);
+            let activeForm = await usecase.getFormActive();
             return res.json(activeForm);
         } catch (e)  {
             return res.status(404).json({code: 404, message: e.message})
@@ -131,7 +107,7 @@ export default function makeFormController(
 
     const formSetActive = async (req, res, next) => {
         try {
-            let response = await usecase.setActive(req.params.formId);
+            let response = await usecase.setActive(req.params.id);
             return res.json( {
                 'message': 'this form has been activated',
                 data: response
@@ -143,29 +119,26 @@ export default function makeFormController(
     }
 
     const listOfResponses = async (req, res, next) => {
+        let id = req.params.id
         try {
-            let forms = await getResponses(dbRepository, req.params.formId);
-            return res.json(forms);
+            let responses = await usecase.listOfResponses(id)
+            return res.json({
+                message: 'responses of user this form',
+                data: responses
+            });
         } catch (e) {
             console.error(e);
         }
     }
 
-    function userExists(array, ayidi) {
-        return array.some(function(el) {
-          return el.user_id === ayidi;
-        }); 
-      }
+
       
     const storeNewResponse = async (req, res, next) => {
         try {
             let {user_id} = req.body;
-            let {formId} = req.params;
-            let a = await Form.find({_id: formId, "responses.user_id": user_id});
-            if (a.length !== 0) {
-                throw new Error('user has filled this form and data is exists on database')
-            }
-            let result = await saveRespondenDataFromForm(dbRepository, req.params.formId, req.body)
+            let {id} = req.params;
+            let data = req.body
+            let result = await usecase.storeResponse(id, user_id, data)
             return res.json({
                     message: 'new response data inserted successfully',
                 })
@@ -183,12 +156,10 @@ export default function makeFormController(
         storeNewForm,
         updateForm,
         destoryForm,
-        saveNewRespondedFromForm,
         getUserResponseForm,
         findActiveForm,
         formSetActive,
         listOfResponses,
         storeNewResponse,
-        getFormByBotId
     }
 } 
