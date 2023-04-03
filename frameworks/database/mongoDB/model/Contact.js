@@ -11,7 +11,7 @@ let schema = new mongoose.Schema({
         required: true
     },
     channel: {
-        type: String,
+        type: [String],
         required: true,
     },
     is_valid: {
