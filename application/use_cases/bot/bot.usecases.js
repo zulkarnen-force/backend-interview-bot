@@ -4,7 +4,7 @@ import FormRepositoryMongoDB from "../../../frameworks/database/mongoDB/reposito
 import util, { isCompleteData, isObject }  from "../../../utils/check.js";
 import FormRepository from "../../repositories/FormRepository.js";
 import getUserResponse from "../form/getUserResponse.js";
-import saveRespondenDataFromForm from '../form/saveRespondenDataFromForm.js'
+import FormUseCase from "../FormUseCase.js";
 
 
 export default function makeBotUseCases(bot, openai) {
@@ -15,7 +15,9 @@ export default function makeBotUseCases(bot, openai) {
     let usedUsersToken = {}
     let userComplete = {};
 
-    let repositoy  = FormRepository(FormRepositoryMongoDB());
+    let repository  = FormRepository(FormRepositoryMongoDB());
+    let formUseCase = FormUseCase(FormRepository());
+
     // let telegram = new Telegram(process.env.BOT_TOKEN)
 
     const increaseUserToken = (chatId, token) => {
@@ -88,7 +90,7 @@ export default function makeBotUseCases(bot, openai) {
               return ctx.reply('user has filled this form');
             }
   
-            let dataUserOnDb = await getUserResponse(repositoy, formId, chatID);
+            let dataUserOnDb = await getUserResponse(repository, formId, chatID);
             console.log(dataUserOnDb);
             if (dataUserOnDb.length !== 0) {
               return ctx.reply('user has filled this form' + JSON.stringify(dataUserOnDb));
@@ -114,7 +116,14 @@ export default function makeBotUseCases(bot, openai) {
                 
                 let requestFormat = toRequestFormat(chatID, 'telegram', usedUsersToken[chatID], 'complete', history[chatID], result)
                 // save to DB
-                saveRespondenDataFromForm(repositoy, formId, requestFormat).then(r => console.log(`save databases `, r))
+                formUseCase.storeResponse(formId, chatID, requestFormat)
+                .then(res => {
+                  console.log('saving to database...')
+                })
+                .catch(e => {
+                  console.log(`error from use case bot saving data to database: ${e.message}`)
+                })
+                // saveRespondenDataFromForm(repository, formId, requestFormat).then(r => console.log(`save databases `, r))
                
                 userHasFilled[chatID] = true;
                 return ctx.reply(await closing(chatID))
@@ -203,7 +212,7 @@ async function runInterview(txt, goal, fields, chatId)
 
     const handleWebhookUpadate = async (req, res) => {
       console.info('incoming update')
-      let {_id: formId, goal, fields} = await repositoy.findActive();      
+      let {_id: formId, goal, fields} = await repository.findActive();      
       let from = req.body.message.from
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
@@ -228,11 +237,17 @@ async function runInterview(txt, goal, fields, chatId)
           
           let requestFormat = toRequestFormat(chatId, 'telegram', usedUsersToken[chatId], 'complete', history[chatId], result)
           // save to DB
-          saveRespondenDataFromForm(repositoy, formId, requestFormat).then(r => console.log(`save databases `, r))
-         
+          formUseCase.storeResponse(formId, chatId, requestFormat)
+          .then(res => {
+            console.log('saving to database...')
+          })
+          .catch(e => {
+            console.log(`error from use case bot saving data to database: ${e.message}`)
+          })
+
           userHasFilled[chatId] = true;
-          // return ctx.reply(await closing(chatId))
-          return bot.telegram.sendMessage(chatId, await closing(chatId));
+          let closingMessage = await closing(chatId)
+          return bot.telegram.sendMessage(chatId, closingMessage);
         }
         
       } // if count chat > 3;

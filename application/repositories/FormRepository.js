@@ -3,7 +3,7 @@ import FormRepositoryMongoDB from "../../frameworks/database/mongoDB/repositorie
 export default function FormRepository(repositoryImpl) {
     const list = () => repositoryImpl.list();
     const findById = (id) => repositoryImpl.findById(id);
-    const store = (id) => repositoryImpl.store(id);
+    const store = (data) => repositoryImpl.store(data);
     const update = (id, data) => repositoryImpl.update(id, data);
     const storeResponse = (form_id, userData) => repositoryImpl.storeResponse(form_id, userData);
     const getUserResponse = async (formId, userId) => repositoryImpl.getUserResponse(formId, userId);

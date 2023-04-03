@@ -1,11 +1,4 @@
-import findById from "../../application/use_cases/form/findById.js";
-import getActiveForm from "../../application/use_cases/form/getActiveForm.js";
 import getUserResponse from "../../application/use_cases/form/getUserResponse.js";
-import getResponses from "../../application/use_cases/form/getResponses.js";
-import saveRespondenDataFromForm from "../../application/use_cases/form/saveRespondenDataFromForm.js";
-import setActive from "../../application/use_cases/form/setActive.js";
-import store from "../../application/use_cases/form/store.js";
-import Form from "../../frameworks/database/mongoDB/model/Form.js";
 import FormUseCase from "../../application/use_cases/FormUseCase.js";
 
 export default function makeFormController(
@@ -32,6 +25,22 @@ export default function makeFormController(
 
         let forms = await usecase.listForms();
         return res.json(forms);
+    }
+
+
+    const createForm = async (req, res, next) => {
+        try {
+            let result = await usecase.storeForm(req.body);
+            return res.json({
+                message: 'form created successfully',
+                data: result,
+            })
+        } catch (error) {
+            return res.status(400).json({
+                code: 400, 
+                message: error.message
+            })
+        }
     }
 
    
@@ -81,14 +90,7 @@ export default function makeFormController(
     }
 
 
-    const storeNewForm = (req, res, next) => {
-        return store(dbRepository, req.body).then(e => res.json(e)).catch(err => res.json(err))
-    }
 
-
-
-
-    
     const getUserResponseForm = async (req, res, next) => {
         const {formId, userId} = req.params;
         let response = await getUserResponse(dbRepository, formId, userId);
@@ -152,8 +154,8 @@ export default function makeFormController(
 
     return {
         listOfForm,
+        createForm,
         findFormById,
-        storeNewForm,
         updateForm,
         destoryForm,
         getUserResponseForm,

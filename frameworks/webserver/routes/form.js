@@ -14,6 +14,12 @@ export default function participantRouter(express) {
     );
 
     router
+    .route('/')
+    .post(
+      controller.createForm
+    );
+
+    router
     .route('/:formId')
     .put(
       controller.updateForm
@@ -64,30 +70,10 @@ export default function participantRouter(express) {
       );
 
       router
-      .route('/')
-      .post(
-        controller.storeNewForm
-      );
-
-      router
       .route('/:formId/responden/:userId/response')
       .get(
         controller.getUserResponseForm
       );
-
-
-
-
-
-  
-
-
-
-
-
-
-
-    
   
     
     return router;

@@ -9,6 +9,17 @@ export default function FormUseCase(repository = FormRepository()) {
 
     } 
 
+
+
+    const storeForm = async (data) => {
+        try {
+            return repository.store(data)
+        } catch (error) {
+            
+        }
+
+    } 
+
     const findByQuery = async (query) => {
         let result  = await repository.findByQuery(query);
  
@@ -105,6 +116,7 @@ export default function FormUseCase(repository = FormRepository()) {
 
     return {
         listForms,
+        storeForm,
         listOfResponses,
         storeResponse,
         findForm,
