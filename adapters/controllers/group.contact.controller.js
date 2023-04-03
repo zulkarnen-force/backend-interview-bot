@@ -7,9 +7,11 @@ export default function GroupContactController(repository) {
     const listGroupContacts = async (req, res, next) => {
         let groupsContacts = await usecase.listOfContact();
 
+     
+
         let result = groupsContacts.map(res => {
             let resultJson = res.toJSON();
-            return Object.assign(resultJson, {total_contacts:  resultJson.contacts.length});
+            return Object.assign(resultJson, {total_contacts:  resultJson.contacts?.length});
         })
 
         return res.json({
@@ -62,20 +64,16 @@ export default function GroupContactController(repository) {
         try {
             let response = await usecase.getOneContact(id);
             let responseJson = response.toJSON();
-            responseJson.total_contacts = responseJson.contacts.length;
+            if (responseJson.contacts) responseJson.total_contacts = responseJson.contacts.length;
             if (!response) {
                 throw new Error('contact not found');
             }
             return res.json(responseJson);
         } catch (error) {
-            if (error instanceof TypeError) {
-                return res.status(400).json({
-                    message: 'maybe your id wrongs'
-                });
-            }
             return res.status(400).json({
                 message: error.message
             });
+     
         }
     }
 

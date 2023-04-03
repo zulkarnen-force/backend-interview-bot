@@ -19,6 +19,7 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
     const  getOneContact = async (id) => {
         try {
             let contact = await repository.getOne(id);
+            console.log(contact)
             return contact
         } catch (error) {
             throw error;
@@ -48,6 +49,7 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
 
     const pushContact = async (id, data) => {
         try {
+            console.log(data)
             let response = await repository.push(id, data);
             return response
         } catch (error) {

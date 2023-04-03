@@ -34,7 +34,7 @@ let schema = new mongoose.Schema({
 //     next();
 //   });
 
-let Contact = mongoose.model('contact', schema);
+let Contact = mongoose.model("Contact", schema);
 
 
 export default Contact;

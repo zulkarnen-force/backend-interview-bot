@@ -10,9 +10,10 @@ let groupContactSchema = new mongoose.Schema({
         validate: [(value) => value.length > 0, 'please fill fields minimal satu aja'],
     },
     contacts: {
-        type: [{name: String, telephone: String}]
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Contact"
     },
-}, { strict: true, timestamps: true});
+}, { strict: false, timestamps: true});
 
 let GroupContact = mongoose.model('GroupContact', groupContactSchema);
 
