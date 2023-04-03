@@ -23,15 +23,25 @@ export default function GroupContactRepositoryMongoDB()
         return newContact.save();
       };
 
-      const getGroupContactsFrom = async (groupContactId, contactId) => {
-        return await GroupContact.findOne({"_id": groupContactId, "contacts": contactId});
+      const getGroupContactsFrom = async (groupContactId, contactsData) => {
+        return await GroupContact.findOne({"_id": groupContactId, contacts: {$in: contactsData}});
       } 
 
-      const push = async (id, data) => {
-        if (Array.isArray(data)) {
-            throw new Error('jangan pake array!, pake string. e.g: {"contacts": "123c0nt4ctId45U"} ')
+      const _findDuplicate = (request = [], result = []) => {
+        let temp =[];
+        for (let i = 0; i < request.length; i++) {
+            for (let j = 0; j < result.length; j++) {
+                if (request[i] === String(result[j])) {
+                    temp.push(request[i]);
+                    break;
+                }
+            }
         }
-        console.log('outer if is array')
+        return temp;
+      }
+
+      const push = async (id, data) => {
+  
         let existContact = await getGroupContactsFrom(id, data)
         if (existContact) {
             let error = new Error('contact is exists')
@@ -39,9 +49,11 @@ export default function GroupContactRepositoryMongoDB()
         }
 
         // not handling valid contact id
-        
         let result = await GroupContact.updateOne({_id: id}, {$addToSet: {contacts: data}})
+
         console.log('result', result);
+        let contactDuplicate = _findDuplicate(data, result.contacts);
+        
       };
 
 
