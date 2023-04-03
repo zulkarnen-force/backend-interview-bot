@@ -16,6 +16,14 @@ export default function ContactRepositoryMongoDB()
         }
     }
 
+    const getByQuery = async (query) => {
+        try {
+            return Contact.findOne(query);
+        } catch (e) {
+            throw e;
+        }
+    }
+
     const store = (data) => {
         const newContact = new Contact(
            data
@@ -47,6 +55,7 @@ export default function ContactRepositoryMongoDB()
     return {
         list,
         getOne,
+        getByQuery,
         store,
         update,
         destroy

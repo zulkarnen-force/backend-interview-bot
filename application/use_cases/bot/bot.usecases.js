@@ -1,22 +1,29 @@
 import { Telegram } from "telegraf";
 import { message } from "telegraf/filters";
 import FormRepositoryMongoDB from "../../../frameworks/database/mongoDB/repositories/FormRepositoryMongoDB.js";
+import ContactMongoDB from "../../../frameworks/database/mongoDB/repositories/ContactRepositoryMongoDB.js";
 import util, { isCompleteData, isObject }  from "../../../utils/check.js";
 import FormRepository from "../../repositories/FormRepository.js";
+import ContactRepository from "../../repositories/ContactRepository.js";
 import getUserResponse from "../form/getUserResponse.js";
 import FormUseCase from "../FormUseCase.js";
+import { connect } from "mongoose";
+
 
 
 export default function makeBotUseCases(bot, openai) {
     let isRunning = false;
     let history = {};
+    let contacts = {};
     let countChat = {};
     let userHasFilled = {};
     let usedUsersToken = {}
     let userComplete = {};
 
     let repository  = FormRepository(FormRepositoryMongoDB());
-    let formUseCase = FormUseCase(FormRepository());
+    let contactRepository = ContactRepository(ContactMongoDB());
+    let formUseCase = FormUseCase(repository);
+    
 
     // let telegram = new Telegram(process.env.BOT_TOKEN)
 
@@ -81,70 +88,70 @@ export default function makeBotUseCases(bot, openai) {
             }
     }
     
-        const set = (goal, fields, formId) => {
-          bot.on(message('text'), async (ctx) => {
+        // const set = (goal, fields, formId) => {
+        //   bot.on(message('text'), async (ctx) => {
             
-            let msg_in = ctx.message.text;
-            let chatID = ctx.message.chat.id;
-            if (userHasFilled[chatID] || false) {
-              return ctx.reply('user has filled this form');
-            }
+        //     let msg_in = ctx.message.text;
+        //     let chatID = ctx.message.chat.id;
+        //     if (userHasFilled[chatID] || false) {
+        //       return ctx.reply('user has filled this form');
+        //     }
   
-            let dataUserOnDb = await getUserResponse(repository, formId, chatID);
-            console.log(dataUserOnDb);
-            if (dataUserOnDb.length !== 0) {
-              return ctx.reply('user has filled this form' + JSON.stringify(dataUserOnDb));
-            }
+        //     let dataUserOnDb = await getUserResponse(repository, formId, chatID);
+        //     console.log(dataUserOnDb);
+        //     if (dataUserOnDb.length !== 0) {
+        //       return ctx.reply('user has filled this form' + JSON.stringify(dataUserOnDb));
+        //     }
             
-            history[chatID] += ` ${msg_in}`;
-            if (!(history[chatID] === '' && history[chatID] === 'undefined')) {
-            }
-            if (countChat[chatID] === undefined) countChat[chatID] = 0;
-            countChat[chatID] += 1;
+        //     history[chatID] += ` ${msg_in}`;
+        //     if (!(history[chatID] === '' && history[chatID] === 'undefined')) {
+        //     }
+        //     if (countChat[chatID] === undefined) countChat[chatID] = 0;
+        //     countChat[chatID] += 1;
     
             
-            console.log(`message in ${msg_in}`)
-            console.log(`count chat ${countChat[chatID]}`)
-            if (history[chatID].includes('undefined')) {
-              history[chatID] = history[chatID].replace('undefined', '')
-            }
+        //     console.log(`message in ${msg_in}`)
+        //     console.log(`count chat ${countChat[chatID]}`)
+        //     if (history[chatID].includes('undefined')) {
+        //       history[chatID] = history[chatID].replace('undefined', '')
+        //     }
     
-            if (countChat[chatID] > 3) {
-              let generatedObjByAi = await toObjectJson(goal, fields, chatID);
-              let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
-              if (isComplete) {
+        //     if (countChat[chatID] > 3) {
+        //       let generatedObjByAi = await toObjectJson(goal, fields, chatID);
+        //       let {isComplete, objectData: result} =  util.isCompleteData(generatedObjByAi, fields)
+        //       if (isComplete) {
                 
-                let requestFormat = toRequestFormat(chatID, 'telegram', usedUsersToken[chatID], 'complete', history[chatID], result)
-                // save to DB
-                formUseCase.storeResponse(formId, chatID, requestFormat)
-                .then(res => {
-                  console.log('saving to database...')
-                })
-                .catch(e => {
-                  console.log(`error from use case bot saving data to database: ${e.message}`)
-                })
-                // saveRespondenDataFromForm(repository, formId, requestFormat).then(r => console.log(`save databases `, r))
+        //         let requestFormat = toRequestFormat(chatID, 'telegram', usedUsersToken[chatID], 'complete', history[chatID], result)
+        //         // save to DB
+        //         formUseCase.storeResponse(formId, chatID, requestFormat)
+        //         .then(res => {
+        //           console.log('saving to database...')
+        //         })
+        //         .catch(e => {
+        //           console.log(`error from use case bot saving data to database: ${e.message}`)
+        //         })
+        //         // saveRespondenDataFromForm(repository, formId, requestFormat).then(r => console.log(`save databases `, r))
                
-                userHasFilled[chatID] = true;
-                return ctx.reply(await closing(chatID))
-              }
+        //         userHasFilled[chatID] = true;
+        //         return ctx.reply(await closing(chatID))
+        //       }
               
-            } // if count chat > 3;
+        //     } // if count chat > 3;
     
-            let msg_out = "";
-            if ( history[chatID] === undefined ) {
-              try {
-                msg_out = await greeting(chatID, goal);
-              } catch (e) {
-                console.error('error on greeting')
-              }
-            } else {
-              msg_out = await runInterview(msg_in, goal, fields, chatID);
-            }
-            await ctx.reply(msg_out);
+        //     let msg_out = "";
+        //     if ( history[chatID] === undefined ) {
+        //       try {
+        //         msg_out = await greeting(chatID, goal);
+        //       } catch (e) {
+        //         console.error('error on greeting')
+        //       }
+        //     } else {
+        //       msg_out = await runInterview(msg_in, goal, fields, chatID);
+        //     }
+        //     await ctx.reply(msg_out);
     
-          }) // on message
-        }; // set bot
+        //   }) // on message
+        // }; // set bot
     
 
     const start = async (goal, fields, formId) => {
@@ -195,9 +202,9 @@ async function runInterview(txt, goal, fields, chatId)
 }
 
     
-    const toRequestFormat = (chatId, channel, totalToken, status, chat_history, data) => {
+    const toRequestFormat = (contactId, channel, totalToken, status, chat_history, data) => {
       let request = {};
-      request.user_id = chatId;
+      request.contact_id = contactId;
       request.channel = 'telegram'
       request.chat_history = chat_history;
       request.status = 'complete';
@@ -208,22 +215,40 @@ async function runInterview(txt, goal, fields, chatId)
     }
     
 
+    const handleContact = (chatId) => {
 
+    }
 
     const handleWebhookUpadate = async (req, res) => {
       console.info('incoming update')
       let {_id: formId, goal, fields} = await repository.findActive();      
       let from = req.body.message.from
+      let firstName = from.first_name;
+      console.log('from',from)
+      console.log('from',from)
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
       console.log(`history${chatId}`, history[chatId])
       console.log(`message ${message}`);
       console.log(`goal ${goal}`);
       console.log(`fields ${fields}`);
+      console.log('contacts', contacts);
 
-      if (userHasFilled[chatId]) {
-        return bot.telegram.sendMessage(chatId, 'user has filled this form')
+      // handle contacts, save if chatId is not found on datbabase;
+      if (!contacts[chatId]) {
+        let contact = await contactRepository.getByQuery({telephone: chatId});
+        console.log(`query to database...`)
+        contacts[chatId] = contact;
+        if (!contact)  {
+          let r = await contactRepository.store(userData);
+          contacts[chatId] = r;
+        }
       }
+
+      // handle if user has filled this forms;
+
+        
+
 
       if (countChat[chatId] === undefined) countChat[chatId] = 0;
       countChat[chatId] += 1;
@@ -235,17 +260,19 @@ async function runInterview(txt, goal, fields, chatId)
         
         if (isComplete) {
           
-          let requestFormat = toRequestFormat(chatId, 'telegram', usedUsersToken[chatId], 'complete', history[chatId], result)
+          let requestFormat = toRequestFormat(contacts[chatId]._id, 'telegram', usedUsersToken[chatId], 'complete', history[chatId], result)
+          console.log('requestFormat:', requestFormat)
           // save to DB
           formUseCase.storeResponse(formId, chatId, requestFormat)
           .then(res => {
             console.log('saving to database...')
+            console.log(res);
           })
           .catch(e => {
             console.log(`error from use case bot saving data to database: ${e.message}`)
           })
 
-          userHasFilled[chatId] = true;
+          // userHasFilled[chatId] = true;
           let closingMessage = await closing(chatId)
           return bot.telegram.sendMessage(chatId, closingMessage);
         }
@@ -273,6 +300,7 @@ async function runInterview(txt, goal, fields, chatId)
       }
 
     }
+  
       
     return {
         start,
