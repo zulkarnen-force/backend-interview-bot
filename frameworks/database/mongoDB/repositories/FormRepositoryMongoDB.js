@@ -12,7 +12,6 @@ export default function FormRepositoryMongoDB()
       let a = await Form.find({}).populate({
         path: 'targets',
         strictPopulate: false,
-        select: ['title', 'channel', 'contacts', 'name'],
       })
       return a;
     }

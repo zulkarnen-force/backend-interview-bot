@@ -5,7 +5,9 @@ import Form from '../../frameworks/database/mongoDB/model/Form.js';
 export default function FormUseCase(repository = FormRepository()) {
 
     const listForms = async () => {
-        return repository.list();
+        
+        let result =await repository.list();
+        console.log(result[0])
 
     } 
 

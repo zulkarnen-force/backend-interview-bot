@@ -43,10 +43,10 @@ export default function GroupContactRepositoryMongoDB()
       const push = async (id, data) => {
   
         let existContact = await getGroupContactsFrom(id, data)
-        if (existContact) {
-            let error = new Error('contact is exists')
-            throw error;
-        }
+        // if (existContact) {
+        //     let error = new Error('contact is exists')
+        //     throw error;
+        // }
 
         // not handling valid contact id
         let result = await GroupContact.updateOne({_id: id}, {$addToSet: {contacts: data}})
