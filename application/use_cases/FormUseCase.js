@@ -8,6 +8,7 @@ export default function FormUseCase(repository = FormRepository()) {
         
         let result =await repository.list();
         console.log(result[0])
+        return result;
 
     } 
 
