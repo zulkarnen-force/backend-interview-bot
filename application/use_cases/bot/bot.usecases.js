@@ -240,6 +240,11 @@ async function runInterview(txt, goal, fields, chatId)
         console.log(`query to database...`)
         contacts[chatId] = contact;
         if (!contact)  {
+          let userData = {
+            telephone: chatId,
+            channel: ['telegram'],
+            name: firstName,
+          }
           let r = await contactRepository.store(userData);
           contacts[chatId] = r;
         }
