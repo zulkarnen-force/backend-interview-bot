@@ -12,7 +12,9 @@ export default function FormRepository(repositoryImpl) {
     const findByQuery = async (query) => repositoryImpl.findByQuery(query);
     const drop = async (id) => repositoryImpl.drop(id);
     const deactiveAll = async () => repositoryImpl.deactiveAll();
-    const userHasFilled = async (formId, userId) =>  repositoryImpl.userHasFilled(formId, userId);
+    const userHasFilled = async (formId, userId) =>  repositoryImpl.userHasFilled(formId, userId); // {hasFilled, data}
+    const destroyUserResponse = async (formId, userId) => repositoryImpl.destroyUserResponse(formId, userId);
+
     
     return {
         list,
@@ -26,7 +28,8 @@ export default function FormRepository(repositoryImpl) {
         setActive,
         findByQuery,
         deactiveAll,
-        userHasFilled
+        userHasFilled,
+        destroyUserResponse
     };
     
   }

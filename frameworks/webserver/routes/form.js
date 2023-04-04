@@ -6,6 +6,14 @@ export default function participantRouter(express) {
     const router = express.Router();
 
     const controller = makeFormController(FormRepository, FormRepositoryMongoDB);
+
+    
+    router
+    .route('/:formId/contacts/:contactId')
+    .delete(
+      controller.removeUserResponse
+    );
+
   
     router
     .route('/')
@@ -60,6 +68,7 @@ export default function participantRouter(express) {
       .get(
         controller.listOfResponses
       );
+
 
 
 

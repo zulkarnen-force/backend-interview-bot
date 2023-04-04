@@ -152,6 +152,24 @@ export default function makeFormController(
         }
     }
 
+
+    const removeUserResponse = async (req, res, next) => {
+        try {
+            let {formId, contactId} = req.params;
+            console.log(contactId)
+            let result = await usecase.removeUserResponse(formId, contactId)
+            return res.json({
+                    message: 'new response data inserted successfully',
+                    result: result,
+                })
+        } catch (e) {
+            return res.status(400).json({
+                code: 400, 
+                message: e.message
+            });
+        }
+    }
+
     return {
         listOfForm,
         createForm,
@@ -163,5 +181,6 @@ export default function makeFormController(
         formSetActive,
         listOfResponses,
         storeNewResponse,
+        removeUserResponse,
     }
 } 

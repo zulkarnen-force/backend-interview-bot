@@ -215,7 +215,7 @@ async function runInterview(txt, goal, fields, chatId)
     }
     
 
-    const handleContact = (chatId) => {
+    const checkUserHasFilled = async (form, userId) => {
 
     }
 
@@ -224,8 +224,6 @@ async function runInterview(txt, goal, fields, chatId)
       let {_id: formId, goal, fields} = await repository.findActive();      
       let from = req.body.message.from
       let firstName = from.first_name;
-      console.log('from',from)
-      console.log('from',from)
       let chatId = req.body.message.chat.id;
       let message = req.body.message.text;
       console.log(`history${chatId}`, history[chatId])
@@ -251,10 +249,15 @@ async function runInterview(txt, goal, fields, chatId)
       }
 
       // handle if user has filled this forms;
+      let {hasFilled,   form} = await repository.userHasFilled(formId, contacts[chatId]._id);
+      console.log("contacts[chatId]._id", contacts[chatId]._id);
+      console.log('formId', formId);
+      console.log("hasFilled: ", hasFilled);
+      console.log("form", form);
+      
+      if (hasFilled) return bot.telegram.sendMessage(chatId, form.responses[0].chat_history);
 
-        
-
-
+      
       if (countChat[chatId] === undefined) countChat[chatId] = 0;
       countChat[chatId] += 1;
 

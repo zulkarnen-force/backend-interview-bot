@@ -1,4 +1,4 @@
-import { Document, get } from "mongoose";
+import mongoose, { Document, get } from "mongoose";
 import Child from "../model/Child.js";
 import Contact from "../model/Contact.js";
 import Form from "../model/Form.js"
@@ -48,10 +48,12 @@ export default function FormRepositoryMongoDB()
       };
 
 
-      const userHasFilled = async (formId, userId) => {
+      const userHasFilled = async (formId, contactId) => {
         try {
-          let form = await Form.find({_id: formId, "responses.user_id": userId});
-          return form.length !== 0;
+          let form = await Form.findOne( {_id: formId, "responses.contact_id": new mongoose.Types.ObjectId(contactId)} );
+          console.log('form FormRepostitory', form)
+          if (form === null) return {hasFilled: false, form: form};
+          return {hasFilled: true, form: form};
         } catch (error) {
           throw error;
         }
@@ -83,6 +85,22 @@ export default function FormRepositoryMongoDB()
         }
       };
 
+      const destroyUserResponse = async (formId, userId) => {
+        try {
+          console.log(userId)
+          console.log('formId', formId)
+            let form = await Form.updateOne({_id: formId}, {
+              $pull: { responses: {
+                contact_id: new mongoose.Types.ObjectId(userId)
+              } }
+            });
+            console.log(form)
+            return form
+        } catch (e) {
+            throw e;
+        }
+      };
+
 
 
 
@@ -98,6 +116,7 @@ export default function FormRepositoryMongoDB()
         findActive,
         setActive,
         deactiveAll,
-        userHasFilled
+        userHasFilled,
+        destroyUserResponse
     }
 }
