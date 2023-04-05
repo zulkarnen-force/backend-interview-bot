@@ -1,4 +1,4 @@
-import GroupContactRepository from "../../repositories/GroupContactRepository.js";
+import GroupContactRepository from "../repositories/GroupContactRepository.js";
 
 export default function GroupContactUseCase(repository = GroupContactRepository()) {
     
@@ -19,7 +19,6 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
     const  getOneContact = async (id) => {
         try {
             let contact = await repository.getOne(id);
-            console.log(contact)
             return contact
         } catch (error) {
             throw error;
@@ -47,10 +46,9 @@ export default function GroupContactUseCase(repository = GroupContactRepository(
         }
     }
 
-    const pushContact = async (id, data) => {
+    const pushContact = async (id, contacts) => {
         try {
-            console.log(data)
-            let response = await repository.push(id, data);
+            let response = await repository.push(id, contacts);
             return response
         } catch (error) {
             throw error;

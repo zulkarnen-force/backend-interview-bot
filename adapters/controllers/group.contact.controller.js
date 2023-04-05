@@ -1,4 +1,4 @@
-import GroupContactUseCase from "../../application/use_cases/group/GroupContactUseCase.js";
+import GroupContactUseCase from "../../application/use_cases/GroupContactUseCase.js";
 import GroupContact from "../../frameworks/database/mongoDB/model/GroupContact.js";
 
 export default function GroupContactController(repository) {
@@ -6,8 +6,6 @@ export default function GroupContactController(repository) {
    
     const listGroupContacts = async (req, res, next) => {
         let groupsContacts = await usecase.listOfContact();
-
-     
 
         let result = groupsContacts.map(res => {
             let resultJson = res.toJSON();
@@ -22,15 +20,17 @@ export default function GroupContactController(repository) {
 
     const storeGroup = async (req, res, next) => {
         try {
-            let response = await usecase.storeContact(req.body)
+            let groupContacts = await usecase.storeContact(req.body)
             return await res.json({
-                message: 'contact saved successfully',
-                data: response
-            });
+                message: 'group contacts saved successfully',
+                data: {
+                    id: groupContacts._id
+                }
+            })  
         } catch (e) {
             return await res.status(400).json({
                 errors: {
-                    code: e.code,
+                    code: (!e.code) ? 400 : e.code,
                     message: e.message
                 }
             });
@@ -41,12 +41,12 @@ export default function GroupContactController(repository) {
     const addContact = async (req, res, next) => {
         try {
             let id = req.params.id;
-            let data = req.body;
-            let { contacts } = data;
+            let { contacts } = req.body;
             if (!contacts) throw new Error('contacts is required bro')
             let response = await usecase.pushContact(id, contacts)
             return await res.json({
                 message: 'contact added successfully',
+                data: response
             });
         } catch (e) {
             return await res.status(400).json({
@@ -63,11 +63,11 @@ export default function GroupContactController(repository) {
         let id = req.params.id;
         try {
             let response = await usecase.getOneContact(id);
-            let responseJson = response.toJSON();
-            if (responseJson.contacts) responseJson.total_contacts = responseJson.contacts.length;
             if (!response) {
                 throw new Error('contact not found');
             }
+            let responseJson = response.toJSON();
+            if (responseJson.contacts) responseJson.total_contacts = responseJson.contacts.length;
             return res.json(responseJson);
         } catch (error) {
             return res.status(400).json({

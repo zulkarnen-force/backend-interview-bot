@@ -30,16 +30,19 @@ export default function makeFormController(
 
     const createForm = async (req, res, next) => {
         try {
-            let result = await usecase.storeForm(req.body);
-            return res.json({
-                message: 'form created successfully',
-                data: result,
-            })
+            let form = await usecase.storeForm(req.body);
+            return await res.json({
+                message: 'contact saved successfully',
+                data: {
+                    id: form._id
+                }
+            })  
         } catch (error) {
             return res.status(400).json({
-                code: 400, 
-                message: error.message
-            })
+            code: 400, 
+            message: error.message
+        })
+        
         }
     }
 
@@ -48,8 +51,6 @@ export default function makeFormController(
 
     const updateForm = async (req, res, next) => {
         try {
-            console.log('update')
-            console.log(req.body);
             let resultUpdate = await usecase.updateForm(req.params.formId, req.body);
             return res.json({
                 message: 'form updated successfully',
@@ -129,7 +130,12 @@ export default function makeFormController(
                 data: responses
             });
         } catch (e) {
-            console.error(e);
+            return res.json({
+                errors: {
+                    code: 400, 
+                    message: e.message
+                }
+            });
         }
     }
 
@@ -156,7 +162,6 @@ export default function makeFormController(
     const removeUserResponse = async (req, res, next) => {
         try {
             let {formId, contactId} = req.params;
-            console.log(contactId)
             let result = await usecase.removeUserResponse(formId, contactId)
             return res.json({
                     message: 'new response data inserted successfully',

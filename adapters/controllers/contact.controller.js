@@ -25,7 +25,9 @@ export default function makeContactController(repository) {
             let response = await usecase.storeContact(req.body)
             return await res.json({
                 message: 'contact saved successfully',
-                data: response
+                data: {
+                    id: response._id
+                }
             });
         } catch (e) {
             return await res.status(400).json({
@@ -89,17 +91,6 @@ export default function makeContactController(repository) {
 
 
 
-
-class BufferStream extends Readable {
-  constructor(opts) {
-    super(opts);
-    this.buf = opts.buf;
-  }
-  _read(size) {
-    this.push(this.buf);
-    this.push(null); // signal end of stream
-  }
-}
     const importContacts = async (req, res, next) => {
         try {
             let data = [];

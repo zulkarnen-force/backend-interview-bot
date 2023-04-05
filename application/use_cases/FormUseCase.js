@@ -3,11 +3,12 @@ import FormRepository from '../repositories/FormRepository.js'
 export default function FormUseCase(repository = FormRepository()) {
 
     const listForms = async () => {
-        
-        let result =await repository.list();
-        console.log(result[0])
-        return result;
-
+        try { 
+            let result =await repository.list();
+            return result;
+        } catch (error) {
+            throw error;
+        }
     } 
 
 
@@ -16,23 +17,28 @@ export default function FormUseCase(repository = FormRepository()) {
         try {
             return repository.store(data)
         } catch (error) {
-            
+            throw error;
         }
 
     } 
 
     const findByQuery = async (query) => {
-        let result  = await repository.findByQuery(query);
+        try {
+            let result  = await repository.findByQuery(query);
  
-        if (result.length === 0) {
-            throw new Error('forms with the bot id not found');
+            if (result.length === 0) {
+                throw new Error('forms with the bot id not found');
+            }
+            let response = result.map(res => {
+                let resultJson = res.toJSON();
+                return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
+            })
+            
+            return response;
+
+        } catch (error) {
+            throw error;
         }
-        let response = result.map(res => {
-            let resultJson = res.toJSON();
-            return Object.assign({}, {id: resultJson._id, fields: resultJson.fields, goal: resultJson.goal});
-        })
-        
-        return response;
     } 
 
 
@@ -79,7 +85,6 @@ export default function FormUseCase(repository = FormRepository()) {
     const listOfResponses  = async (id) => {
         try {
             let form = await repository.findById(id);
-            console.log(form)
             let responses = form.responses;
             return responses;
         } catch (e) {
@@ -90,11 +95,6 @@ export default function FormUseCase(repository = FormRepository()) {
 
     const storeResponse  = async (formId, userId, data) => {
         try {
-            // let userHasFilled = await repository.userHasFilled(formId, userId);
-            // console.log(`user has filled ${userHasFilled}`)
-            // if (userHasFilled) {
-            //     throw new Error('user has filled this form')
-            // }
             let result = await repository.storeResponse(formId, data);
             return result;
         } catch (e) {
