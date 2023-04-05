@@ -122,6 +122,16 @@ export default function FormUseCase(repository = FormRepository()) {
             throw e;
         }
     }
+
+    
+    const removeUserTarget = async (formId) => {
+        try {
+            let form = await repository.destroyUserTarget(formId)
+            return form;
+        } catch (e) {
+            throw e;
+        }
+    }
     
 
     return {
@@ -135,6 +145,7 @@ export default function FormUseCase(repository = FormRepository()) {
         findByQuery,
         setActive,
         getFormActive,
-        removeUserResponse
+        removeUserResponse,
+        removeUserTarget
     }
 }

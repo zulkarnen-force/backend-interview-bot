@@ -14,6 +14,12 @@ export default function participantRouter(express) {
       controller.removeUserResponse
     );
 
+    router
+    .route('/:formId/targets')
+    .delete(
+      controller.removeTarget
+    );
+
   
     router
     .route('/')

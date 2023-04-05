@@ -51,7 +51,6 @@ export default function FormRepositoryMongoDB()
       const userHasFilled = async (formId, contactId) => {
         try {
           let form = await Form.findOne( {_id: formId, "responses.contact_id": new mongoose.Types.ObjectId(contactId)} );
-          console.log('form FormRepostitory', form)
           if (form === null) return {hasFilled: false, form: form};
           return {hasFilled: true, form: form};
         } catch (error) {
@@ -102,6 +101,15 @@ export default function FormRepositoryMongoDB()
       };
 
 
+      const destroyUserTarget = async (formId) => {
+        try {
+            let form = await Form.findOneAndUpdate({_id: formId}, {targets: null}) 
+            return form;
+        } catch (e) {
+            throw e;
+        }
+      };
+
 
 
     return {
@@ -117,6 +125,7 @@ export default function FormRepositoryMongoDB()
         setActive,
         deactiveAll,
         userHasFilled,
-        destroyUserResponse
+        destroyUserResponse,
+        destroyUserTarget
     }
 }

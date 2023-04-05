@@ -14,6 +14,7 @@ export default function FormRepository(repositoryImpl) {
     const deactiveAll = async () => repositoryImpl.deactiveAll();
     const userHasFilled = async (formId, userId) =>  repositoryImpl.userHasFilled(formId, userId); // {hasFilled, data}
     const destroyUserResponse = async (formId, userId) => repositoryImpl.destroyUserResponse(formId, userId);
+    const destroyUserTarget = async (formId) => repositoryImpl.destroyUserTarget(formId);
 
     
     return {
@@ -29,7 +30,8 @@ export default function FormRepository(repositoryImpl) {
         findByQuery,
         deactiveAll,
         userHasFilled,
-        destroyUserResponse
+        destroyUserResponse,
+        destroyUserTarget
     };
     
   }

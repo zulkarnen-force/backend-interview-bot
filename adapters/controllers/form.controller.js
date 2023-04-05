@@ -170,6 +170,23 @@ export default function makeFormController(
         }
     }
 
+
+    const removeTarget = async (req, res, next) => {
+        try {
+            let {formId} = req.params;
+            let result = await usecase.removeUserTarget(formId)
+            return res.json({
+                    message: 'delete target for this form successfully',
+                    result: result,
+                })
+        } catch (e) {
+            return res.status(400).json({
+                code: 400, 
+                message: e.message
+            });
+        }
+    }
+
     return {
         listOfForm,
         createForm,
@@ -182,5 +199,6 @@ export default function makeFormController(
         listOfResponses,
         storeNewResponse,
         removeUserResponse,
+        removeTarget,
     }
 } 
